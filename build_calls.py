@@ -6,7 +6,7 @@ Writes calls.partial.json (merged into data.json by build_leaderboard.py).
 import json
 import sys
 
-from lib import CLOSERS, CLOSER_BY_ID, WINDOW_KEYS, compute_windows, in_window, load_calls, to_la_date
+from lib import CLOSERS, CLOSER_BY_ID, ALL_WINDOW_KEYS, compute_windows, in_window, load_calls, to_la_date
 from datetime import datetime, timezone
 
 
@@ -26,7 +26,7 @@ def main():
 
     per_closer = {c["key"]: {
         "name": c["name"],
-        **{wk: blank_bucket() for wk in WINDOW_KEYS},
+        **{wk: blank_bucket() for wk in ALL_WINDOW_KEYS},
     } for c in CLOSERS}
 
     unmatched_closer_calls = 0  # calls made by non-closer team members (VAs, admins) - not counted, not hidden
@@ -46,7 +46,7 @@ def main():
             continue
         direction = m.get("direction")
         duration = (m.get("meta") or {}).get("call", {}).get("duration") or 0
-        for win_key in WINDOW_KEYS:
+        for win_key in ALL_WINDOW_KEYS:
             if in_window(date_str, windows[win_key]):
                 bucket = per_closer[closer["key"]][win_key]
                 bucket["attempts"] += 1
@@ -57,7 +57,7 @@ def main():
                 bucket["seconds"] += duration
 
     for row in per_closer.values():
-        for win_key in WINDOW_KEYS:
+        for win_key in ALL_WINDOW_KEYS:
             b = row[win_key]
             b["hours"] = round(b["seconds"] / 3600.0, 1)
 

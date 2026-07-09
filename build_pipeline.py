@@ -12,7 +12,7 @@ full transition history, so this is the closest honest reading of "booked"/"held
 import json
 import sys
 
-from lib import (CLOSERS, CLOSER_BY_ID, STAGE_MAP, BOOKED_STAGES, SHOWED_STAGES, WINDOW_KEYS,
+from lib import (CLOSERS, CLOSER_BY_ID, STAGE_MAP, BOOKED_STAGES, SHOWED_STAGES, ALL_WINDOW_KEYS,
                   compute_windows, in_window, is_test_contact, load_opportunities, to_la_date)
 from datetime import datetime, timezone
 
@@ -33,7 +33,7 @@ def main():
 
     per_closer = {c["key"]: {
         "name": c["name"],
-        **{wk: blank_window_row() for wk in WINDOW_KEYS},
+        **{wk: blank_window_row() for wk in ALL_WINDOW_KEYS},
     } for c in CLOSERS}
 
     total_won_alltime_all_closers_raw = 0  # independent cross-check tally, not read from per_closer
@@ -62,7 +62,7 @@ def main():
         if stage_key == "closedWon" and in_window(date_str, windows["allTime"]):
             total_won_alltime_all_closers_raw += 1
 
-        for win_key in WINDOW_KEYS:
+        for win_key in ALL_WINDOW_KEYS:
             if not in_window(date_str, windows[win_key]):
                 continue
             row = per_closer[closer["key"]][win_key]
@@ -87,7 +87,7 @@ def main():
 
     # Sanity gate: booked is the superset; held/noShow/showed can never exceed it.
     for c in CLOSERS:
-        for win_key in WINDOW_KEYS:
+        for win_key in ALL_WINDOW_KEYS:
             row = per_closer[c["key"]][win_key]
             if row["showed"] + row["noShow"] > row["booked"]:
                 print("RECONCILE FAIL (pipeline): %s/%s showed+noShow > booked" % (c["key"], win_key))

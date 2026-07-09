@@ -12,7 +12,9 @@ function esc(s) {
 }
 
 // Canonical window order, shared by the scorecard and the leaderboard table so one
-// toggle controls both.
+// toggle controls both. Defaults to All Time: a young account's early wins can predate
+// the current day/week/month/quarter boundary, so a rolling window alone can make a real
+// sale look like it never happened (this is exactly what surfaced 2026-07-09).
 const WINS = [
   { key: 'day', label: 'Today' },
   { key: 'week', label: 'This week' },
@@ -20,11 +22,13 @@ const WINS = [
   { key: 'quarter', label: 'This quarter' },
   { key: 'allTime', label: 'All time' },
 ];
+const DEFAULT_WIN = 'allTime';
 
 const COLS = [
   { k: 'name', label: 'Closer', cls: '' },
   { k: 'dealsClosed', label: 'Deals closed', cls: 'num' },
   { k: 'cash', label: 'Cash collected', cls: 'num ok' },
+  { k: 'trend', label: 'Trend', cls: 'num' },
   { k: 'callsBooked', label: 'Calls booked', cls: 'num' },
   { k: 'callsHeld', label: 'Calls held', cls: 'num' },
   { k: 'noShow', label: 'No show', cls: 'num' },
@@ -48,6 +52,13 @@ const SCORECARD_TILES = [
   { k: 'showed', label: 'Total show', cls: '' },
 ];
 
+const LEADER_TILES = [
+  { k: 'topCash', label: 'Top cash collected', icon: 'C' },
+  { k: 'topCloseRate', label: 'Top close rate', icon: 'R' },
+  { k: 'topShowRate', label: 'Top show rate', icon: 'S' },
+  { k: 'mostActive', label: 'Most active (calls)', icon: 'A' },
+];
+
 function medal(rank) {
   if (rank === 1) return '<span class="medal g">1</span>';
   if (rank === 2) return '<span class="medal s">2</span>';
@@ -55,10 +66,17 @@ function medal(rank) {
   return '<span class="medal">' + rank + '</span>';
 }
 
-function buildTable(winKey, rows, totals) {
+function trendBadge(trend, note) {
+  if (trend === 'na') return '<span class="trend-tag na">career</span>';
+  const glyph = trend === 'up' ? '&#9650;' : trend === 'down' ? '&#9660;' : '&#9679;';
+  return '<span class="trend-tag ' + trend + '" title="' + esc(note) + '">' + glyph + '</span>';
+}
+
+function buildTable(rows, totals) {
   const head = '<tr><th></th>' + COLS.map(c => '<th class="' + c.cls + '">' + c.label + '</th>').join('') + '</tr>';
   const body = rows.map(r => {
     const cells = COLS.map(c => {
+      if (c.k === 'trend') return '<td class="' + c.cls + '">' + trendBadge(r.trend, r.trendNote) + '</td>';
       const raw = c.k === 'callHours' ? Number(r[c.k]).toFixed(1) : r[c.k];
       const v = c.k === 'name' ? esc(r.name) : esc(raw);
       return '<td class="' + c.cls + '">' + v + '</td>';
@@ -67,6 +85,7 @@ function buildTable(winKey, rows, totals) {
   }).join('\n');
   const totalCells = COLS.map(c => {
     if (c.k === 'name') return '<td class="foot">Team total</td>';
+    if (c.k === 'trend') return '<td class="num foot">' + trendBadge(totals.trend, totals.trendNote) + '</td>';
     const raw = c.k === 'callHours' ? Number(totals[c.k]).toFixed(1) : totals[c.k];
     return '<td class="num foot">' + esc(raw) + '</td>';
   }).join('');
@@ -79,8 +98,8 @@ function buildTable(winKey, rows, totals) {
 // section it lives, since both the scorecard and the leaderboard table render their
 // panels with the same data-win attribute and .wpanel class.
 function buildWindowTabs() {
-  const tabs = WINS.map((w, i) =>
-    '<button class="wtab' + (i === 0 ? ' active' : '') + '" data-win="' + w.key + '" onclick="slSwitchWindow(\'' + w.key + '\')">' + esc(w.label) + '</button>'
+  const tabs = WINS.map(w =>
+    '<button class="wtab' + (w.key === DEFAULT_WIN ? ' active' : '') + '" data-win="' + w.key + '" onclick="slSwitchWindow(\'' + w.key + '\')">' + esc(w.label) + '</button>'
   ).join('');
   const script = '<script>function slSwitchWindow(k){' +
     'document.querySelectorAll(".wtab").forEach(function(b){b.classList.toggle("active", b.dataset.win===k);});' +
@@ -89,28 +108,127 @@ function buildWindowTabs() {
   return '<div class="wtabs">' + tabs + '</div>' + script;
 }
 
+function leaderCard(tile, leader) {
+  const name = leader ? esc(leader.name) : 'Awaiting data';
+  const value = leader ? esc(leader.value) : '-';
+  return '<div class="leadercard"><div class="lc-icon">' + tile.icon + '</div>' +
+    '<div class="lc-body"><div class="lc-label">' + esc(tile.label) + '</div>' +
+    '<div class="lc-name">' + name + '</div><div class="lc-value">' + value + '</div></div></div>';
+}
+
 function buildScorecardBlock() {
-  const panels = WINS.map((w, i) => {
+  const panels = WINS.map(w => {
     const t = d.totals[w.key];
     const tiles = SCORECARD_TILES.map(tile =>
       '<div class="tile"><div class="tv ' + tile.cls + '">' + esc(t[tile.k]) + '</div><div class="tl">' + esc(tile.label) + '</div></div>'
     ).join('');
-    return '<div class="wpanel' + (i === 0 ? ' active' : '') + '" data-win="' + w.key + '">' +
+    const lead = d.leaders[w.key];
+    const cards = LEADER_TILES.map(tile => leaderCard(tile, lead[tile.k])).join('');
+    return '<div class="wpanel' + (w.key === DEFAULT_WIN ? ' active' : '') + '" data-win="' + w.key + '">' +
       '<div class="wlabel">' + esc(d.windows[w.key].label) + '</div>' +
       '<div class="tiles">' + tiles + '</div>' +
+      '<div class="leaders-hd">Leaders, this window</div>' +
+      '<div class="leaders">' + cards + '</div>' +
       '</div>';
   }).join('\n');
   return buildWindowTabs() + panels;
 }
 
 function buildLeaderboardBlock() {
-  const panels = WINS.map((w, i) =>
-    '<div class="wpanel' + (i === 0 ? ' active' : '') + '" data-win="' + w.key + '">' +
+  return WINS.map(w =>
+    '<div class="wpanel' + (w.key === DEFAULT_WIN ? ' active' : '') + '" data-win="' + w.key + '">' +
     '<div class="wlabel">' + esc(d.windows[w.key].label) + '</div>' +
-    buildTable(w.key, d.leaderboard[w.key], d.totals[w.key]) +
+    buildTable(d.leaderboard[w.key], d.totals[w.key]) +
     '</div>'
   ).join('\n');
-  return panels;
+}
+
+function buildCareerBanner() {
+  const t = d.totals.allTime;
+  const top = d.leaders.allTime.topCash;
+  const topText = top ? (esc(top.name) + ' leads with ' + esc(top.value)) : 'No cash collected yet';
+  return '<div class="career"><span class="career-tag">ALL TIME</span> ' +
+    '<b>' + esc(t.cash) + '</b> collected &middot; <b>' + esc(t.dealsClosed) + '</b> deal' + (t.dealsClosed === 1 ? '' : 's') + ' closed &middot; ' +
+    topText + ' &middot; since ' + esc(d.windows.allTime.start) +
+    '</div>';
+}
+
+// --- Pipeline Health page: no window toggle, always full history / current snapshot ---
+
+function svgBarChart(rows, valueKey, opts) {
+  const W = 700, H = 130, padL = 6, padR = 6, padB = 18, padT = 6;
+  const innerW = W - padL - padR, innerH = H - padT - padB;
+  const max = Math.max(1, ...rows.map(r => r[valueKey]));
+  const bw = innerW / rows.length;
+  const bars = rows.map((r, i) => {
+    const v = r[valueKey];
+    const bh = (v / max) * innerH;
+    const x = padL + i * bw + bw * 0.15;
+    const y = padT + innerH - bh;
+    const w = bw * 0.7;
+    const label = (i % 4 === 0) ? '<text x="' + (x + w / 2) + '" y="' + (H - 4) + '" font-size="9" fill="#64748B" text-anchor="middle">' + esc(r.date.slice(5)) + '</text>' : '';
+    const title = '<title>' + esc(r.date) + ': ' + esc(String(v)) + '</title>';
+    return '<rect x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + Math.max(bh, v > 0 ? 2 : 0).toFixed(1) + '" fill="' + (opts.color || '#3B82F6') + '" rx="2">' + title + '</rect>' + label;
+  }).join('');
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" class="chart">' + bars + '</svg>';
+}
+
+function svgLineChart(rows, valueKey, opts) {
+  const W = 700, H = 130, padL = 6, padR = 6, padB = 18, padT = 10;
+  const innerW = W - padL - padR, innerH = H - padT - padB;
+  const max = opts.max || Math.max(1, ...rows.map(r => r[valueKey] || 0));
+  const step = innerW / Math.max(1, rows.length - 1);
+  const pt = (i, v) => [padL + i * step, padT + innerH - (v / max) * innerH];
+  let segs = [], cur = [];
+  rows.forEach((r, i) => {
+    const v = r[valueKey];
+    if (v === null || v === undefined) {
+      if (cur.length) segs.push(cur);
+      cur = [];
+    } else {
+      cur.push(pt(i, v));
+    }
+  });
+  if (cur.length) segs.push(cur);
+  const lines = segs.map(seg =>
+    '<polyline points="' + seg.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ') + '" fill="none" stroke="' + (opts.color || '#3B82F6') + '" stroke-width="2"/>' +
+    seg.map(p => '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="2.5" fill="' + (opts.color || '#3B82F6') + '"/>').join('')
+  ).join('');
+  const labels = rows.map((r, i) => (i % 4 === 0) ?
+    '<text x="' + pt(i, 0)[0].toFixed(1) + '" y="' + (H - 4) + '" font-size="9" fill="#64748B" text-anchor="middle">' + esc(r.date.slice(5)) + '</text>' : '').join('');
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" class="chart">' + lines + labels + '</svg>';
+}
+
+function buildTrendCharts() {
+  const daily = d.daily;
+  const showRateRows = daily.map(r => ({ date: r.date, v: (r.showed + r.noShow) > 0 ? Math.round(100 * r.showed / (r.showed + r.noShow)) : null }));
+  let cum = 0;
+  const cumCash = daily.map(r => { cum += r.cashCents; return { date: r.date, v: cum / 100 }; });
+  return (
+    '<div class="charthd">Calls booked per day, since launch</div>' +
+    svgBarChart(daily, 'callsBooked', { color: '#3B82F6' }) +
+    '<div class="charthd">Show rate per day (blank = no calls resolved that day)</div>' +
+    svgLineChart(showRateRows.map(r => ({ date: r.date, pct: r.v })), 'pct', { color: '#059669', max: 100 }) +
+    '<div class="charthd">Cumulative cash collected, since launch</div>' +
+    svgBarChart(cumCash.map(r => ({ date: r.date, cum: r.v })), 'cum', { color: '#059669' })
+  );
+}
+
+function buildFunnel() {
+  const max = Math.max(1, ...d.funnel.map(f => f.count));
+  const rows = d.funnel.map(f => {
+    const pctW = Math.max(2, Math.round(100 * f.count / max));
+    return '<div class="frow"><div class="flabel">' + esc(f.label) + '</div>' +
+      '<div class="fbarwrap"><div class="fbar" style="width:' + pctW + '%"></div></div>' +
+      '<div class="fcount">' + esc(f.count) + '</div></div>';
+  }).join('');
+  return '<div class="funnel">' + rows + '</div>' +
+    '<div class="note" style="margin-top:8px">Board-exact snapshot, all ' + esc(d.funnelTotal) + ' opportunities on the pipeline right now (includes internal/test records, same as the live GHL board columns).</div>';
+}
+
+function buildPipelineHealthBlock() {
+  return '<div class="charts">' + buildTrendCharts() + '</div>' +
+    '<h3 class="sub-sec">Whole pipeline, by stage</h3>' + buildFunnel();
 }
 
 function buildAuditBlock() {
@@ -128,20 +246,18 @@ function buildAuditBlock() {
 
 let html = fs.readFileSync('index.template.html', 'utf8');
 
-// --- Marker region: SCORECARD ---
-const reSc = /<!--SCORECARD_START-->[\s\S]*?<!--SCORECARD_END-->/;
-if (!reSc.test(html)) { console.error('ERROR: SCORECARD markers not found'); process.exit(1); }
-html = html.replace(reSc, '<!--SCORECARD_START-->' + buildScorecardBlock() + '<!--SCORECARD_END-->');
-
-// --- Marker region: LEADERBOARD ---
-const reLb = /<!--LEADERBOARD_START-->[\s\S]*?<!--LEADERBOARD_END-->/;
-if (!reLb.test(html)) { console.error('ERROR: LEADERBOARD markers not found'); process.exit(1); }
-html = html.replace(reLb, '<!--LEADERBOARD_START-->' + buildLeaderboardBlock() + '<!--LEADERBOARD_END-->');
-
-// --- Marker region: AUDIT ---
-const reAudit = /<!--AUDIT_START-->[\s\S]*?<!--AUDIT_END-->/;
-if (!reAudit.test(html)) { console.error('ERROR: AUDIT markers not found'); process.exit(1); }
-html = html.replace(reAudit, '<!--AUDIT_START-->' + buildAuditBlock() + '<!--AUDIT_END-->');
+const MARKERS = [
+  ['CAREER', buildCareerBanner],
+  ['SCORECARD', buildScorecardBlock],
+  ['LEADERBOARD', buildLeaderboardBlock],
+  ['PIPELINE', buildPipelineHealthBlock],
+  ['AUDIT', buildAuditBlock],
+];
+for (const [name, fn] of MARKERS) {
+  const re = new RegExp('<!--' + name + '_START-->[\\s\\S]*?<!--' + name + '_END-->');
+  if (!re.test(html)) { console.error('ERROR: ' + name + ' markers not found'); process.exit(1); }
+  html = html.replace(re, '<!--' + name + '_START-->' + fn() + '<!--' + name + '_END-->');
+}
 
 // --- Live tokens: {%dotted.path%} filled from data.json ---
 function flatten(obj, prefix, out) {

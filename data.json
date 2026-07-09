@@ -1,7 +1,7 @@
 {
   "asOf": "2026-07-08",
   "timezone": "America/Los_Angeles",
-  "generatedAtUtc": "2026-07-09T01:10:08+00:00",
+  "generatedAtUtc": "2026-07-09T01:33:23+00:00",
   "windows": {
     "day": {
       "start": "2026-07-08",
@@ -57,12 +57,16 @@
         "noShowRate": "67%",
         "showed": 1,
         "showRate": "33%",
+        "showRateNum": 33.333333333333336,
         "closeRate": "0%",
+        "closeRateNum": 0.0,
         "outboundCalls": 7,
         "inboundCalls": 0,
         "totalCalls": 7,
         "callHours": 0.4,
-        "rank": 1
+        "rank": 1,
+        "trend": "flat",
+        "trendNote": "flat vs prior period"
       },
       {
         "key": "dan",
@@ -76,12 +80,16 @@
         "noShowRate": "awaiting",
         "showed": 0,
         "showRate": "awaiting",
+        "showRateNum": null,
         "closeRate": "awaiting",
+        "closeRateNum": null,
         "outboundCalls": 1,
         "inboundCalls": 0,
         "totalCalls": 1,
         "callHours": 0.0,
-        "rank": 2
+        "rank": 2,
+        "trend": "flat",
+        "trendNote": "flat vs prior period"
       },
       {
         "key": "matthew",
@@ -95,12 +103,16 @@
         "noShowRate": "awaiting",
         "showed": 0,
         "showRate": "awaiting",
+        "showRateNum": null,
         "closeRate": "awaiting",
+        "closeRateNum": null,
         "outboundCalls": 0,
         "inboundCalls": 0,
         "totalCalls": 0,
         "callHours": 0.0,
-        "rank": 3
+        "rank": 3,
+        "trend": "flat",
+        "trendNote": "flat vs prior period"
       }
     ],
     "week": [
@@ -116,12 +128,16 @@
         "noShowRate": "75%",
         "showed": 4,
         "showRate": "25%",
+        "showRateNum": 25.0,
         "closeRate": "0%",
+        "closeRateNum": 0.0,
         "outboundCalls": 16,
         "inboundCalls": 1,
         "totalCalls": 17,
         "callHours": 0.5,
-        "rank": 1
+        "rank": 1,
+        "trend": "down",
+        "trendNote": "-$4,997.00, -1 deal"
       },
       {
         "key": "dan",
@@ -135,12 +151,16 @@
         "noShowRate": "50%",
         "showed": 2,
         "showRate": "50%",
+        "showRateNum": 50.0,
         "closeRate": "0%",
+        "closeRateNum": 0.0,
         "outboundCalls": 11,
         "inboundCalls": 1,
         "totalCalls": 12,
         "callHours": 0.0,
-        "rank": 2
+        "rank": 2,
+        "trend": "flat",
+        "trendNote": "flat vs prior period"
       },
       {
         "key": "matthew",
@@ -154,12 +174,16 @@
         "noShowRate": "100%",
         "showed": 0,
         "showRate": "0%",
+        "showRateNum": 0.0,
         "closeRate": "awaiting",
+        "closeRateNum": null,
         "outboundCalls": 3,
         "inboundCalls": 0,
         "totalCalls": 3,
         "callHours": 0.0,
-        "rank": 3
+        "rank": 3,
+        "trend": "flat",
+        "trendNote": "flat vs prior period"
       }
     ],
     "month": [
@@ -175,12 +199,16 @@
         "noShowRate": "75%",
         "showed": 4,
         "showRate": "25%",
+        "showRateNum": 25.0,
         "closeRate": "0%",
+        "closeRateNum": 0.0,
         "outboundCalls": 31,
         "inboundCalls": 1,
         "totalCalls": 32,
         "callHours": 0.6,
-        "rank": 1
+        "rank": 1,
+        "trend": "down",
+        "trendNote": "-$4,997.00, -1 deal"
       },
       {
         "key": "dan",
@@ -194,12 +222,16 @@
         "noShowRate": "50%",
         "showed": 4,
         "showRate": "50%",
+        "showRateNum": 50.0,
         "closeRate": "0%",
+        "closeRateNum": 0.0,
         "outboundCalls": 18,
         "inboundCalls": 1,
         "totalCalls": 19,
         "callHours": 0.0,
-        "rank": 2
+        "rank": 2,
+        "trend": "flat",
+        "trendNote": "flat vs prior period"
       },
       {
         "key": "matthew",
@@ -213,12 +245,16 @@
         "noShowRate": "80%",
         "showed": 1,
         "showRate": "20%",
+        "showRateNum": 20.0,
         "closeRate": "0%",
+        "closeRateNum": 0.0,
         "outboundCalls": 8,
         "inboundCalls": 0,
         "totalCalls": 8,
         "callHours": 0.0,
-        "rank": 3
+        "rank": 3,
+        "trend": "flat",
+        "trendNote": "flat vs prior period"
       }
     ],
     "quarter": [
@@ -234,12 +270,16 @@
         "noShowRate": "75%",
         "showed": 4,
         "showRate": "25%",
+        "showRateNum": 25.0,
         "closeRate": "0%",
+        "closeRateNum": 0.0,
         "outboundCalls": 31,
         "inboundCalls": 1,
         "totalCalls": 32,
         "callHours": 0.6,
-        "rank": 1
+        "rank": 1,
+        "trend": "down",
+        "trendNote": "-$4,997.00, -1 deal"
       },
       {
         "key": "dan",
@@ -253,12 +293,16 @@
         "noShowRate": "50%",
         "showed": 4,
         "showRate": "50%",
+        "showRateNum": 50.0,
         "closeRate": "0%",
+        "closeRateNum": 0.0,
         "outboundCalls": 18,
         "inboundCalls": 1,
         "totalCalls": 19,
         "callHours": 0.0,
-        "rank": 2
+        "rank": 2,
+        "trend": "flat",
+        "trendNote": "flat vs prior period"
       },
       {
         "key": "matthew",
@@ -272,12 +316,16 @@
         "noShowRate": "80%",
         "showed": 1,
         "showRate": "20%",
+        "showRateNum": 20.0,
         "closeRate": "0%",
+        "closeRateNum": 0.0,
         "outboundCalls": 8,
         "inboundCalls": 0,
         "totalCalls": 8,
         "callHours": 0.0,
-        "rank": 3
+        "rank": 3,
+        "trend": "flat",
+        "trendNote": "flat vs prior period"
       }
     ],
     "allTime": [
@@ -293,12 +341,16 @@
         "noShowRate": "71%",
         "showed": 5,
         "showRate": "29%",
+        "showRateNum": 29.41176470588235,
         "closeRate": "20%",
+        "closeRateNum": 20.0,
         "outboundCalls": 41,
         "inboundCalls": 5,
         "totalCalls": 46,
         "callHours": 1.0,
-        "rank": 1
+        "rank": 1,
+        "trend": "na",
+        "trendNote": "since launch, no prior period"
       },
       {
         "key": "dan",
@@ -312,12 +364,16 @@
         "noShowRate": "55%",
         "showed": 5,
         "showRate": "45%",
+        "showRateNum": 45.45454545454545,
         "closeRate": "0%",
+        "closeRateNum": 0.0,
         "outboundCalls": 26,
         "inboundCalls": 1,
         "totalCalls": 27,
         "callHours": 0.2,
-        "rank": 2
+        "rank": 2,
+        "trend": "na",
+        "trendNote": "since launch, no prior period"
       },
       {
         "key": "matthew",
@@ -331,12 +387,16 @@
         "noShowRate": "78%",
         "showed": 2,
         "showRate": "22%",
+        "showRateNum": 22.22222222222222,
         "closeRate": "0%",
+        "closeRateNum": 0.0,
         "outboundCalls": 9,
         "inboundCalls": 0,
         "totalCalls": 9,
         "callHours": 0.0,
-        "rank": 3
+        "rank": 3,
+        "trend": "na",
+        "trendNote": "since launch, no prior period"
       }
     ]
   },
@@ -355,7 +415,9 @@
       "outboundCalls": 8,
       "inboundCalls": 0,
       "totalCalls": 8,
-      "callHours": 0.4
+      "callHours": 0.4,
+      "trend": "flat",
+      "trendNote": "flat vs prior period"
     },
     "week": {
       "dealsClosed": 0,
@@ -371,7 +433,9 @@
       "outboundCalls": 30,
       "inboundCalls": 2,
       "totalCalls": 32,
-      "callHours": 0.5
+      "callHours": 0.5,
+      "trend": "down",
+      "trendNote": "-$4,997.00, -1 deal"
     },
     "month": {
       "dealsClosed": 0,
@@ -387,7 +451,9 @@
       "outboundCalls": 57,
       "inboundCalls": 2,
       "totalCalls": 59,
-      "callHours": 0.7
+      "callHours": 0.7,
+      "trend": "down",
+      "trendNote": "-$4,997.00, -1 deal"
     },
     "quarter": {
       "dealsClosed": 0,
@@ -403,7 +469,9 @@
       "outboundCalls": 57,
       "inboundCalls": 2,
       "totalCalls": 59,
-      "callHours": 0.7
+      "callHours": 0.7,
+      "trend": "down",
+      "trendNote": "-$4,997.00, -1 deal"
     },
     "allTime": {
       "dealsClosed": 1,
@@ -419,9 +487,471 @@
       "outboundCalls": 76,
       "inboundCalls": 6,
       "totalCalls": 82,
-      "callHours": 1.2
+      "callHours": 1.2,
+      "trend": "na",
+      "trendNote": "since launch, no prior period"
     }
   },
+  "leaders": {
+    "day": {
+      "topCash": {
+        "key": "caleb",
+        "name": "Caleb Chase",
+        "value": "$0.00"
+      },
+      "topCloseRate": {
+        "key": "caleb",
+        "name": "Caleb Chase",
+        "value": "0%"
+      },
+      "topShowRate": {
+        "key": "caleb",
+        "name": "Caleb Chase",
+        "value": "33%"
+      },
+      "mostActive": {
+        "key": "caleb",
+        "name": "Caleb Chase",
+        "value": 7
+      }
+    },
+    "week": {
+      "topCash": {
+        "key": "caleb",
+        "name": "Caleb Chase",
+        "value": "$0.00"
+      },
+      "topCloseRate": {
+        "key": "caleb",
+        "name": "Caleb Chase",
+        "value": "0%"
+      },
+      "topShowRate": {
+        "key": "dan",
+        "name": "Dan Baldasso",
+        "value": "50%"
+      },
+      "mostActive": {
+        "key": "caleb",
+        "name": "Caleb Chase",
+        "value": 17
+      }
+    },
+    "month": {
+      "topCash": {
+        "key": "caleb",
+        "name": "Caleb Chase",
+        "value": "$0.00"
+      },
+      "topCloseRate": {
+        "key": "caleb",
+        "name": "Caleb Chase",
+        "value": "0%"
+      },
+      "topShowRate": {
+        "key": "dan",
+        "name": "Dan Baldasso",
+        "value": "50%"
+      },
+      "mostActive": {
+        "key": "caleb",
+        "name": "Caleb Chase",
+        "value": 32
+      }
+    },
+    "quarter": {
+      "topCash": {
+        "key": "caleb",
+        "name": "Caleb Chase",
+        "value": "$0.00"
+      },
+      "topCloseRate": {
+        "key": "caleb",
+        "name": "Caleb Chase",
+        "value": "0%"
+      },
+      "topShowRate": {
+        "key": "dan",
+        "name": "Dan Baldasso",
+        "value": "50%"
+      },
+      "mostActive": {
+        "key": "caleb",
+        "name": "Caleb Chase",
+        "value": 32
+      }
+    },
+    "allTime": {
+      "topCash": {
+        "key": "caleb",
+        "name": "Caleb Chase",
+        "value": "$4,997.00"
+      },
+      "topCloseRate": {
+        "key": "caleb",
+        "name": "Caleb Chase",
+        "value": "20%"
+      },
+      "topShowRate": {
+        "key": "dan",
+        "name": "Dan Baldasso",
+        "value": "45%"
+      },
+      "mostActive": {
+        "key": "caleb",
+        "name": "Caleb Chase",
+        "value": 46
+      }
+    }
+  },
+  "daily": [
+    {
+      "date": "2026-06-15",
+      "callsBooked": 0,
+      "callsHeld": 0,
+      "noShow": 0,
+      "showed": 0,
+      "won": 0,
+      "cashCents": 0,
+      "outboundCalls": 0,
+      "inboundCalls": 0,
+      "totalCalls": 0
+    },
+    {
+      "date": "2026-06-16",
+      "callsBooked": 0,
+      "callsHeld": 0,
+      "noShow": 0,
+      "showed": 0,
+      "won": 0,
+      "cashCents": 0,
+      "outboundCalls": 0,
+      "inboundCalls": 0,
+      "totalCalls": 0
+    },
+    {
+      "date": "2026-06-17",
+      "callsBooked": 0,
+      "callsHeld": 0,
+      "noShow": 0,
+      "showed": 0,
+      "won": 0,
+      "cashCents": 0,
+      "outboundCalls": 0,
+      "inboundCalls": 0,
+      "totalCalls": 0
+    },
+    {
+      "date": "2026-06-18",
+      "callsBooked": 0,
+      "callsHeld": 0,
+      "noShow": 0,
+      "showed": 0,
+      "won": 0,
+      "cashCents": 0,
+      "outboundCalls": 0,
+      "inboundCalls": 0,
+      "totalCalls": 0
+    },
+    {
+      "date": "2026-06-19",
+      "callsBooked": 0,
+      "callsHeld": 0,
+      "noShow": 0,
+      "showed": 0,
+      "won": 0,
+      "cashCents": 0,
+      "outboundCalls": 0,
+      "inboundCalls": 0,
+      "totalCalls": 0
+    },
+    {
+      "date": "2026-06-20",
+      "callsBooked": 0,
+      "callsHeld": 0,
+      "noShow": 0,
+      "showed": 0,
+      "won": 0,
+      "cashCents": 0,
+      "outboundCalls": 0,
+      "inboundCalls": 0,
+      "totalCalls": 0
+    },
+    {
+      "date": "2026-06-21",
+      "callsBooked": 0,
+      "callsHeld": 0,
+      "noShow": 0,
+      "showed": 0,
+      "won": 0,
+      "cashCents": 0,
+      "outboundCalls": 0,
+      "inboundCalls": 0,
+      "totalCalls": 0
+    },
+    {
+      "date": "2026-06-22",
+      "callsBooked": 0,
+      "callsHeld": 0,
+      "noShow": 0,
+      "showed": 0,
+      "won": 0,
+      "cashCents": 0,
+      "outboundCalls": 0,
+      "inboundCalls": 0,
+      "totalCalls": 0
+    },
+    {
+      "date": "2026-06-23",
+      "callsBooked": 0,
+      "callsHeld": 0,
+      "noShow": 0,
+      "showed": 0,
+      "won": 0,
+      "cashCents": 0,
+      "outboundCalls": 1,
+      "inboundCalls": 0,
+      "totalCalls": 1
+    },
+    {
+      "date": "2026-06-24",
+      "callsBooked": 0,
+      "callsHeld": 0,
+      "noShow": 0,
+      "showed": 0,
+      "won": 0,
+      "cashCents": 0,
+      "outboundCalls": 0,
+      "inboundCalls": 0,
+      "totalCalls": 0
+    },
+    {
+      "date": "2026-06-25",
+      "callsBooked": 0,
+      "callsHeld": 0,
+      "noShow": 0,
+      "showed": 0,
+      "won": 0,
+      "cashCents": 0,
+      "outboundCalls": 3,
+      "inboundCalls": 0,
+      "totalCalls": 3
+    },
+    {
+      "date": "2026-06-26",
+      "callsBooked": 0,
+      "callsHeld": 0,
+      "noShow": 0,
+      "showed": 0,
+      "won": 0,
+      "cashCents": 0,
+      "outboundCalls": 3,
+      "inboundCalls": 3,
+      "totalCalls": 6
+    },
+    {
+      "date": "2026-06-27",
+      "callsBooked": 0,
+      "callsHeld": 0,
+      "noShow": 0,
+      "showed": 0,
+      "won": 0,
+      "cashCents": 0,
+      "outboundCalls": 0,
+      "inboundCalls": 0,
+      "totalCalls": 0
+    },
+    {
+      "date": "2026-06-28",
+      "callsBooked": 1,
+      "callsHeld": 0,
+      "noShow": 1,
+      "showed": 0,
+      "won": 0,
+      "cashCents": 0,
+      "outboundCalls": 1,
+      "inboundCalls": 0,
+      "totalCalls": 1
+    },
+    {
+      "date": "2026-06-29",
+      "callsBooked": 2,
+      "callsHeld": 1,
+      "noShow": 1,
+      "showed": 1,
+      "won": 0,
+      "cashCents": 0,
+      "outboundCalls": 5,
+      "inboundCalls": 0,
+      "totalCalls": 5
+    },
+    {
+      "date": "2026-06-30",
+      "callsBooked": 5,
+      "callsHeld": 0,
+      "noShow": 3,
+      "showed": 2,
+      "won": 1,
+      "cashCents": 499700,
+      "outboundCalls": 6,
+      "inboundCalls": 1,
+      "totalCalls": 7
+    },
+    {
+      "date": "2026-07-01",
+      "callsBooked": 3,
+      "callsHeld": 1,
+      "noShow": 2,
+      "showed": 1,
+      "won": 0,
+      "cashCents": 0,
+      "outboundCalls": 13,
+      "inboundCalls": 0,
+      "totalCalls": 13
+    },
+    {
+      "date": "2026-07-02",
+      "callsBooked": 4,
+      "callsHeld": 0,
+      "noShow": 2,
+      "showed": 2,
+      "won": 0,
+      "cashCents": 0,
+      "outboundCalls": 10,
+      "inboundCalls": 0,
+      "totalCalls": 10
+    },
+    {
+      "date": "2026-07-03",
+      "callsBooked": 2,
+      "callsHeld": 0,
+      "noShow": 1,
+      "showed": 0,
+      "won": 0,
+      "cashCents": 0,
+      "outboundCalls": 1,
+      "inboundCalls": 0,
+      "totalCalls": 1
+    },
+    {
+      "date": "2026-07-04",
+      "callsBooked": 0,
+      "callsHeld": 0,
+      "noShow": 0,
+      "showed": 0,
+      "won": 0,
+      "cashCents": 0,
+      "outboundCalls": 0,
+      "inboundCalls": 0,
+      "totalCalls": 0
+    },
+    {
+      "date": "2026-07-05",
+      "callsBooked": 1,
+      "callsHeld": 0,
+      "noShow": 0,
+      "showed": 0,
+      "won": 0,
+      "cashCents": 0,
+      "outboundCalls": 3,
+      "inboundCalls": 0,
+      "totalCalls": 3
+    },
+    {
+      "date": "2026-07-06",
+      "callsBooked": 7,
+      "callsHeld": 0,
+      "noShow": 2,
+      "showed": 0,
+      "won": 0,
+      "cashCents": 0,
+      "outboundCalls": 7,
+      "inboundCalls": 2,
+      "totalCalls": 9
+    },
+    {
+      "date": "2026-07-07",
+      "callsBooked": 37,
+      "callsHeld": 0,
+      "noShow": 11,
+      "showed": 5,
+      "won": 0,
+      "cashCents": 0,
+      "outboundCalls": 15,
+      "inboundCalls": 0,
+      "totalCalls": 15
+    },
+    {
+      "date": "2026-07-08",
+      "callsBooked": 13,
+      "callsHeld": 0,
+      "noShow": 2,
+      "showed": 1,
+      "won": 0,
+      "cashCents": 0,
+      "outboundCalls": 8,
+      "inboundCalls": 0,
+      "totalCalls": 8
+    }
+  ],
+  "funnel": [
+    {
+      "key": "newUnworked",
+      "label": "New, Unworked",
+      "count": 91
+    },
+    {
+      "key": "contacted",
+      "label": "Contacted",
+      "count": 0
+    },
+    {
+      "key": "callBooked",
+      "label": "Call Booked",
+      "count": 28
+    },
+    {
+      "key": "rescheduling",
+      "label": "Rescheduling",
+      "count": 21
+    },
+    {
+      "key": "noShow",
+      "label": "No Show",
+      "count": 27
+    },
+    {
+      "key": "apptCancelled",
+      "label": "Appt Cancelled",
+      "count": 10
+    },
+    {
+      "key": "callHeld",
+      "label": "Call Held",
+      "count": 2
+    },
+    {
+      "key": "highPriority",
+      "label": "High Priority",
+      "count": 9
+    },
+    {
+      "key": "closedWon",
+      "label": "Closed Won",
+      "count": 1
+    },
+    {
+      "key": "longTermNurture",
+      "label": "Long-Term Nurture",
+      "count": 4
+    },
+    {
+      "key": "lost",
+      "label": "Lost",
+      "count": 5
+    }
+  ],
+  "funnelTotal": 198,
   "audit": {
     "excludedTestRecords": 8,
     "totalOpportunitiesPulled": 198,

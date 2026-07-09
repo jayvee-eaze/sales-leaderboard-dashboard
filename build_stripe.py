@@ -11,7 +11,7 @@ Excludes charges under $1 (card/link verification charges, not real sales).
 import json
 import sys
 
-from lib import CLOSER_BY_ID, CLOSERS, WINDOW_KEYS, compute_windows, in_window, is_test_contact, load_opportunities, to_la_date
+from lib import CLOSER_BY_ID, CLOSERS, ALL_WINDOW_KEYS, compute_windows, in_window, is_test_contact, load_opportunities, to_la_date
 from datetime import datetime, timezone
 
 
@@ -49,10 +49,10 @@ def main():
 
     per_closer = {c["key"]: {
         "name": c["name"],
-        **{wk: blank_window_row() for wk in WINDOW_KEYS},
+        **{wk: blank_window_row() for wk in ALL_WINDOW_KEYS},
     } for c in CLOSERS}
-    unattributed = {wk: blank_window_row() for wk in WINDOW_KEYS}
-    window_total_cents = {wk: 0 for wk in WINDOW_KEYS}
+    unattributed = {wk: blank_window_row() for wk in ALL_WINDOW_KEYS}
+    window_total_cents = {wk: 0 for wk in ALL_WINDOW_KEYS}
 
     for ch in charges:
         if ch.get("amount", 0) < 100:  # exclude sub-$1 verification charges
@@ -62,7 +62,7 @@ def main():
             continue
         email = (ch.get("billing_email") or "").lower()
         closer_key = email_to_closer.get(email)
-        for win_key in WINDOW_KEYS:
+        for win_key in ALL_WINDOW_KEYS:
             if not in_window(date_str, windows[win_key]):
                 continue
             window_total_cents[win_key] += ch["amount"]
@@ -74,7 +74,7 @@ def main():
             row["sales"] += 1
 
     # Reconcile gate: attributed + unattributed must equal the raw window total, to the cent.
-    for win_key in WINDOW_KEYS:
+    for win_key in ALL_WINDOW_KEYS:
         summed = sum(per_closer[c["key"]][win_key]["cash_cents"] for c in CLOSERS) + unattributed[win_key]["cash_cents"]
         if summed != window_total_cents[win_key]:
             print("RECONCILE FAIL (stripe): %s attributed+unattributed (%d) != window total (%d)" % (

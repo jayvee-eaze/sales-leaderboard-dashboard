@@ -3,25 +3,38 @@
 <title>Sales Leaderboard, Ai Funding Solutions</title>
 <style>
   :root {
-    --navy: #0F172A; --blue: #3B82F6; --blue-d: #1D4ED8; --ok: #059669; --warn: #B45309;
+    --navy: #0F172A; --blue: #3B82F6; --blue-d: #1D4ED8; --ok: #059669; --warn: #B45309; --bad: #DC2626;
     --line: #E2E8F0; --muted: #64748B; --paper: #FFFFFF; --bg: #F8FAFC;
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--navy); font-family: Inter, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
   .wrap { max-width: 1100px; margin: 0 auto; padding: 24px 20px 64px; }
-  header { padding: 4px 0 20px; border-bottom: 1px solid var(--line); margin-bottom: 20px; }
+  header { padding: 4px 0 16px; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
   h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -0.01em; }
   .sub { color: var(--muted); font-size: 13px; }
   .note { color: var(--muted); font-size: 12.5px; margin: 6px 0 0; }
   h2.sec { font-size: 15px; margin: 28px 0 10px; color: var(--navy); }
+  h3.sub-sec { font-size: 13px; margin: 22px 0 10px; color: var(--navy); }
+
+  .career { background: var(--navy); color: #fff; border-radius: 10px; padding: 12px 16px; font-size: 13px; margin-bottom: 18px; }
+  .career b { font-weight: 700; }
+  .career-tag { display: inline-block; background: rgba(255,255,255,0.15); border-radius: 999px; padding: 2px 8px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; margin-right: 8px; }
+
+  .pagetabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; border-bottom: 1px solid var(--line); padding-bottom: 12px; }
+  .ptab { border: none; background: transparent; color: var(--muted); padding: 8px 4px; font-size: 14px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; }
+  .ptab.active { color: var(--blue-d); border-bottom-color: var(--blue-d); }
+  .page { display: none; }
+  .page.active { display: block; }
+
   .wtabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
   .wtab { border: 1px solid var(--line); background: var(--paper); color: var(--navy); padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
   .wtab.active { background: var(--navy); border-color: var(--navy); color: #fff; }
   .wpanel { display: none; }
   .wpanel.active { display: block; }
   .wlabel { color: var(--muted); font-size: 12.5px; margin-bottom: 8px; }
+
   .boardwrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
-  table.board { width: 100%; min-width: 980px; border-collapse: collapse; background: var(--paper); font-size: 13px; }
+  table.board { width: 100%; min-width: 1080px; border-collapse: collapse; background: var(--paper); font-size: 13px; }
   table.board th, table.board td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
   table.board th { background: #F1F5F9; color: var(--muted); font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.03em; }
   table.board td.num, table.board th.num { text-align: right; font-variant-numeric: tabular-nums; }
@@ -30,21 +43,51 @@
   table.board .rank { width: 34px; }
   table.board tr.totalrow td { font-weight: 700; background: #F8FAFC; border-top: 2px solid var(--line); border-bottom: none; }
   table.board tr.totalrow td.foot { color: var(--navy); }
+
   .medal { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #E2E8F0; color: var(--navy); font-size: 11px; font-weight: 800; }
   .medal.g { background: #FDE68A; }
   .medal.s { background: #E5E7EB; }
   .medal.b { background: #FBCFE8; }
+
+  .trend-tag { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 6px; cursor: default; }
+  .trend-tag.up { color: var(--ok); background: #ECFDF5; }
+  .trend-tag.down { color: var(--bad); background: #FEF2F2; }
+  .trend-tag.flat { color: var(--muted); background: #F1F5F9; }
+  .trend-tag.na { color: var(--muted); background: #F1F5F9; font-weight: 600; font-size: 10px; text-transform: uppercase; }
+
   table.audit { width: 100%; border-collapse: collapse; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; font-size: 13px; }
   table.audit td { padding: 9px 12px; border-bottom: 1px solid var(--line); color: var(--muted); }
   table.audit tr:last-child td { border-bottom: none; }
   table.audit td.num { text-align: right; font-variant-numeric: tabular-nums; color: var(--navy); font-weight: 600; }
+
   .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
   .tile { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
   .tile .tv { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
   .tile .tv.ok { color: var(--ok); }
   .tile .tl { color: var(--muted); font-size: 12px; margin-top: 4px; }
-  @media (max-width: 900px) { .tiles { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 480px) { .tiles { grid-template-columns: 1fr; } }
+
+  .leaders-hd { color: var(--muted); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; margin: 20px 0 8px; }
+  .leaders { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .leadercard { display: flex; gap: 10px; align-items: flex-start; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  .lc-icon { width: 26px; height: 26px; border-radius: 50%; background: #EFF6FF; color: var(--blue-d); font-weight: 800; font-size: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .lc-label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; }
+  .lc-name { font-weight: 700; font-size: 13.5px; margin-top: 2px; }
+  .lc-value { color: var(--blue-d); font-weight: 700; font-size: 13px; margin-top: 1px; }
+
+  @media (max-width: 900px) { .tiles, .leaders { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .tiles, .leaders { grid-template-columns: 1fr; } }
+
+  .charts .chart { width: 100%; height: auto; display: block; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; margin-bottom: 4px; }
+  .charthd { color: var(--muted); font-size: 12px; margin: 16px 0 6px; }
+
+  .funnel { display: flex; flex-direction: column; gap: 6px; }
+  .frow { display: grid; grid-template-columns: 130px 1fr 40px; align-items: center; gap: 10px; font-size: 12.5px; }
+  .flabel { color: var(--navy); }
+  .fbarwrap { background: #F1F5F9; border-radius: 6px; height: 16px; overflow: hidden; }
+  .fbar { background: var(--blue); height: 100%; border-radius: 6px; }
+  .fcount { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  @media (max-width: 640px) { .frow { grid-template-columns: 90px 1fr 32px; font-size: 11.5px; } }
+
   .callout { font-size: 12.5px; color: var(--muted); background: #F1F5F9; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-top: 14px; }
   footer { margin-top: 40px; color: var(--muted); font-size: 11.5px; border-top: 1px solid var(--line); padding-top: 14px; }
   @media (max-width: 640px) {
@@ -59,15 +102,37 @@
     <div class="note">Refreshed daily. As of {%asOf%} ({%timezone%}). Generated {%generatedAtUtc%} UTC.</div>
   </header>
 
-  <h2 class="sec">Team performance</h2>
-  <!--SCORECARD_START--><!--SCORECARD_END-->
+  <!--CAREER_START--><!--CAREER_END-->
 
-  <h2 class="sec">Ranked by cash collected, then deals closed</h2>
-  <!--LEADERBOARD_START--><!--LEADERBOARD_END-->
-
-  <div class="callout">
-    Deals closed and cash collected are counted the day the sale closes in the pipeline and the day Stripe settles the charge, so short windows can read zero even when calls are active, a sale can take weeks to close. Calls booked, held and no show are counted by the date each call's outcome was last updated on the pipeline board, not the date it was originally scheduled, GHL does not expose a full stage history. Show = calls held plus everything that progressed further (high priority, closed won). Cash is always the real Stripe figure, never GHL's flat close-won stamp. Outbound, inbound and call hours count only this closer's own dialed calls, setter and admin dialing is tracked separately and excluded from these three columns. All time means since the business launched on {%windows.allTime.start%}.
+  <div class="pagetabs">
+    <button class="ptab active" data-page="scorecard" onclick="slSwitchPage('scorecard')">Scorecard</button>
+    <button class="ptab" data-page="leaderboard" onclick="slSwitchPage('leaderboard')">Leaderboard</button>
+    <button class="ptab" data-page="pipeline" onclick="slSwitchPage('pipeline')">Pipeline health</button>
   </div>
+  <script>
+    function slSwitchPage(p) {
+      document.querySelectorAll('.ptab').forEach(function (b) { b.classList.toggle('active', b.dataset.page === p); });
+      document.querySelectorAll('.page').forEach(function (s) { s.classList.toggle('active', s.dataset.page === p); });
+    }
+  </script>
+
+  <section class="page active" data-page="scorecard">
+    <h2 class="sec">Team performance</h2>
+    <!--SCORECARD_START--><!--SCORECARD_END-->
+  </section>
+
+  <section class="page" data-page="leaderboard">
+    <h2 class="sec">Ranked by cash collected, then deals closed</h2>
+    <!--LEADERBOARD_START--><!--LEADERBOARD_END-->
+    <div class="callout">
+      Deals closed and cash collected are counted the day the sale closes in the pipeline and the day Stripe settles the charge, so short windows can read zero even when calls are active, a sale can take weeks to close. Calls booked, held and no show are counted by the date each call's outcome was last updated on the pipeline board, not the date it was originally scheduled, GHL does not expose a full stage history. Show = calls held plus everything that progressed further (high priority, closed won). Cash is always the real Stripe figure, never GHL's flat close-won stamp. Outbound, inbound and call hours count only this closer's own dialed calls, setter and admin dialing is tracked separately and excluded from these three columns. Trend compares this window to the immediately prior equivalent window (this week vs last week, and so on); All Time never has a prior period. All time means since the business launched on {%windows.allTime.start%}.
+    </div>
+  </section>
+
+  <section class="page" data-page="pipeline">
+    <h2 class="sec">Pipeline health</h2>
+    <!--PIPELINE_START--><!--PIPELINE_END-->
+  </section>
 
   <h2 class="sec">Data audit</h2>
   <!--AUDIT_START--><!--AUDIT_END-->

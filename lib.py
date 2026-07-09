@@ -24,7 +24,13 @@ CLOSER_BY_ID = {c["id"]: c for c in CLOSERS}
 # dashboard. "All time" means since this date, not since the pipeline's oldest record.
 LAUNCH_DATE = "2026-06-15"
 
+# The 5 user-facing toggle windows (scorecard + leaderboard share these).
 WINDOW_KEYS = ("day", "week", "month", "quarter", "allTime")
+# Trailing-period comparisons used only to compute trend arrows, never shown as tabs.
+# No "previous all time" exists, so allTime has no entry here.
+PREV_OF = {"day": "prevDay", "week": "prevWeek", "month": "prevMonth", "quarter": "prevQuarter"}
+# Every window build_calls.py / build_pipeline.py / build_stripe.py must bucket into.
+ALL_WINDOW_KEYS = WINDOW_KEYS + tuple(PREV_OF.values())
 
 STAGE_MAP = {
     "b9bfc681-76ef-4402-a7b8-428e39788582": "newUnworked",
@@ -39,6 +45,21 @@ STAGE_MAP = {
     "a3bd42d8-305d-4307-aba7-b1da1658acbc": "longTermNurture",
     "368b91ca-95f0-48f8-89e2-6074426b983b": "lost",
 }
+
+# Board display order + labels for the pipeline funnel chart (Pipeline Health page).
+STAGE_DISPLAY = [
+    ("newUnworked", "New, Unworked"),
+    ("contacted", "Contacted"),
+    ("callBooked", "Call Booked"),
+    ("rescheduling", "Rescheduling"),
+    ("noShow", "No Show"),
+    ("apptCancelled", "Appt Cancelled"),
+    ("callHeld", "Call Held"),
+    ("highPriority", "High Priority"),
+    ("closedWon", "Closed Won"),
+    ("longTermNurture", "Long-Term Nurture"),
+    ("lost", "Lost"),
+]
 
 # Stages that mean "a call was booked and its outcome, whatever it was, is now known
 # or still pending" - the full universe booked-call denominator.
@@ -130,6 +151,16 @@ def compute_windows(now_utc):
     def fmt(d):
         return "{} {}".format(d.strftime("%b"), d.day)
 
+    # Trailing-period comparisons, for trend arrows only (never a visible tab).
+    prev_day = today - timedelta(days=1)
+    prev_week_start = week_start - timedelta(days=7)
+    prev_week_end = week_start - timedelta(days=1)
+    prev_month_end = month_start - timedelta(days=1)
+    prev_month_start = prev_month_end.replace(day=1)
+    prev_quarter_end = quarter_start - timedelta(days=1)
+    prev_quarter_start_month = ((prev_quarter_end.month - 1) // 3) * 3 + 1
+    prev_quarter_start = prev_quarter_end.replace(month=prev_quarter_start_month, day=1)
+
     return {
         "day": {"start": today.isoformat(), "end": today.isoformat(),
                 "label": "{}, {}".format(today.strftime("%a"), fmt(today))},
@@ -141,6 +172,14 @@ def compute_windows(now_utc):
                     "label": "Q{} {}".format(quarter_num, today.year)},
         "allTime": {"start": launch.isoformat(), "end": today.isoformat(),
                     "label": "Since launch, {}".format(fmt(launch))},
+        "prevDay": {"start": prev_day.isoformat(), "end": prev_day.isoformat(),
+                    "label": "Yesterday"},
+        "prevWeek": {"start": prev_week_start.isoformat(), "end": prev_week_end.isoformat(),
+                     "label": "Last week"},
+        "prevMonth": {"start": prev_month_start.isoformat(), "end": prev_month_end.isoformat(),
+                      "label": "Last month"},
+        "prevQuarter": {"start": prev_quarter_start.isoformat(), "end": prev_quarter_end.isoformat(),
+                        "label": "Last quarter"},
     }
 
 
@@ -158,6 +197,13 @@ def pct(numer, denom):
     if not denom:
         return "awaiting"
     return "{:.0f}%".format(100.0 * numer / denom)
+
+
+def pct_num(numer, denom):
+    """Same as pct() but returns a float (0-100) or None, for sorting/leader picks."""
+    if not denom:
+        return None
+    return 100.0 * numer / denom
 
 
 def rate2(numer, denom):
