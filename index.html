@@ -1,0 +1,76 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sales Leaderboard, Ai Funding Solutions</title>
+<style>
+  :root {
+    --navy: #0F172A; --blue: #3B82F6; --blue-d: #1D4ED8; --ok: #059669; --warn: #B45309;
+    --line: #E2E8F0; --muted: #64748B; --paper: #FFFFFF; --bg: #F8FAFC;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--navy); font-family: Inter, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 24px 20px 64px; }
+  header { padding: 4px 0 20px; border-bottom: 1px solid var(--line); margin-bottom: 20px; }
+  h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); font-size: 13px; }
+  .note { color: var(--muted); font-size: 12.5px; margin: 6px 0 0; }
+  h2.sec { font-size: 15px; margin: 28px 0 10px; color: var(--navy); }
+  .wtabs { display: flex; gap: 6px; margin-bottom: 14px; }
+  .wtab { border: 1px solid var(--line); background: var(--paper); color: var(--navy); padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .wtab.active { background: var(--navy); border-color: var(--navy); color: #fff; }
+  .wpanel { display: none; }
+  .wpanel.active { display: block; }
+  .wlabel { color: var(--muted); font-size: 12.5px; margin-bottom: 8px; }
+  .boardwrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+  table.board { width: 100%; min-width: 980px; border-collapse: collapse; background: var(--paper); font-size: 13px; }
+  table.board th, table.board td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+  table.board th { background: #F1F5F9; color: var(--muted); font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.03em; }
+  table.board td.num, table.board th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  table.board td.ok { color: var(--ok); font-weight: 700; }
+  table.board tr:last-child td { border-bottom: none; }
+  table.board .rank { width: 34px; }
+  table.board tr.totalrow td { font-weight: 700; background: #F8FAFC; border-top: 2px solid var(--line); border-bottom: none; }
+  table.board tr.totalrow td.foot { color: var(--navy); }
+  .medal { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #E2E8F0; color: var(--navy); font-size: 11px; font-weight: 800; }
+  .medal.g { background: #FDE68A; }
+  .medal.s { background: #E5E7EB; }
+  .medal.b { background: #FBCFE8; }
+  table.audit { width: 100%; border-collapse: collapse; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; font-size: 13px; }
+  table.audit td { padding: 9px 12px; border-bottom: 1px solid var(--line); color: var(--muted); }
+  table.audit tr:last-child td { border-bottom: none; }
+  table.audit td.num { text-align: right; font-variant-numeric: tabular-nums; color: var(--navy); font-weight: 600; }
+  .callout { font-size: 12.5px; color: var(--muted); background: #F1F5F9; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-top: 14px; }
+  footer { margin-top: 40px; color: var(--muted); font-size: 11.5px; border-top: 1px solid var(--line); padding-top: 14px; }
+  @media (max-width: 640px) {
+    .wrap { padding: 16px 12px 48px; }
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Sales Leaderboard</h1>
+    <div class="sub">Ai Funding Solutions, closer performance</div>
+    <div class="note">Refreshed daily. As of 2026-07-08 (America/Los_Angeles). Generated 2026-07-09T00:29:18+00:00 UTC.</div>
+  </header>
+
+  <h2 class="sec">Ranked by cash collected, then deals closed</h2>
+  <!--LEADERBOARD_START--><div class="wtabs"><button class="wtab active" data-win="day" onclick="slSwitchWindow('day')">Today</button><button class="wtab" data-win="week" onclick="slSwitchWindow('week')">This week</button><button class="wtab" data-win="month" onclick="slSwitchWindow('month')">This month</button></div><div class="wpanel active" data-win="day"><div class="wlabel">Wed, Jul 8</div><div class="boardwrap"><table class="board" data-win="day"><thead><tr><th></th><th class="">Closer</th><th class="num">Deals closed</th><th class="num ok">Cash collected</th><th class="num">Calls booked</th><th class="num">Calls held</th><th class="num">No show</th><th class="num">No show rate</th><th class="num">Show</th><th class="num">Show rate</th><th class="num">Close rate</th><th class="num">Outbound calls</th><th class="num">Inbound calls</th><th class="num">Call hours</th></tr></thead><tbody><tr><td class="rank"><span class="medal g">1</span></td><td class="">Caleb Chase</td><td class="num">0</td><td class="num ok">$0.00</td><td class="num">10</td><td class="num">0</td><td class="num">2</td><td class="num">67%</td><td class="num">1</td><td class="num">33%</td><td class="num">0%</td><td class="num">7</td><td class="num">0</td><td class="num">0.4</td></tr>
+<tr><td class="rank"><span class="medal s">2</span></td><td class="">Dan Baldasso</td><td class="num">0</td><td class="num ok">$0.00</td><td class="num">3</td><td class="num">0</td><td class="num">0</td><td class="num">awaiting</td><td class="num">0</td><td class="num">awaiting</td><td class="num">awaiting</td><td class="num">1</td><td class="num">0</td><td class="num">0</td></tr>
+<tr><td class="rank"><span class="medal b">3</span></td><td class="">Matthew Burns</td><td class="num">0</td><td class="num ok">$0.00</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">awaiting</td><td class="num">0</td><td class="num">awaiting</td><td class="num">awaiting</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr></tbody><tfoot><tr class="totalrow"><td></td><td class="foot">Team total</td><td class="num foot">0</td><td class="num foot">$0.00</td><td class="num foot">13</td><td class="num foot">0</td><td class="num foot">2</td><td class="num foot">67%</td><td class="num foot">1</td><td class="num foot">33%</td><td class="num foot">0%</td><td class="num foot">8</td><td class="num foot">0</td><td class="num foot">0.4</td></tr></tfoot></table></div></div>
+<div class="wpanel" data-win="week"><div class="wlabel">Jul 6 - Jul 12</div><div class="boardwrap"><table class="board" data-win="week"><thead><tr><th></th><th class="">Closer</th><th class="num">Deals closed</th><th class="num ok">Cash collected</th><th class="num">Calls booked</th><th class="num">Calls held</th><th class="num">No show</th><th class="num">No show rate</th><th class="num">Show</th><th class="num">Show rate</th><th class="num">Close rate</th><th class="num">Outbound calls</th><th class="num">Inbound calls</th><th class="num">Call hours</th></tr></thead><tbody><tr><td class="rank"><span class="medal g">1</span></td><td class="">Caleb Chase</td><td class="num">0</td><td class="num ok">$0.00</td><td class="num">46</td><td class="num">0</td><td class="num">12</td><td class="num">75%</td><td class="num">4</td><td class="num">25%</td><td class="num">0%</td><td class="num">16</td><td class="num">1</td><td class="num">0.5</td></tr>
+<tr><td class="rank"><span class="medal s">2</span></td><td class="">Dan Baldasso</td><td class="num">0</td><td class="num ok">$0.00</td><td class="num">7</td><td class="num">0</td><td class="num">2</td><td class="num">50%</td><td class="num">2</td><td class="num">50%</td><td class="num">0%</td><td class="num">11</td><td class="num">1</td><td class="num">0</td></tr>
+<tr><td class="rank"><span class="medal b">3</span></td><td class="">Matthew Burns</td><td class="num">0</td><td class="num ok">$0.00</td><td class="num">4</td><td class="num">0</td><td class="num">1</td><td class="num">100%</td><td class="num">0</td><td class="num">0%</td><td class="num">awaiting</td><td class="num">3</td><td class="num">0</td><td class="num">0</td></tr></tbody><tfoot><tr class="totalrow"><td></td><td class="foot">Team total</td><td class="num foot">0</td><td class="num foot">$0.00</td><td class="num foot">57</td><td class="num foot">0</td><td class="num foot">15</td><td class="num foot">71%</td><td class="num foot">6</td><td class="num foot">29%</td><td class="num foot">0%</td><td class="num foot">30</td><td class="num foot">2</td><td class="num foot">0.5</td></tr></tfoot></table></div></div>
+<div class="wpanel" data-win="month"><div class="wlabel">July 2026</div><div class="boardwrap"><table class="board" data-win="month"><thead><tr><th></th><th class="">Closer</th><th class="num">Deals closed</th><th class="num ok">Cash collected</th><th class="num">Calls booked</th><th class="num">Calls held</th><th class="num">No show</th><th class="num">No show rate</th><th class="num">Show</th><th class="num">Show rate</th><th class="num">Close rate</th><th class="num">Outbound calls</th><th class="num">Inbound calls</th><th class="num">Call hours</th></tr></thead><tbody><tr><td class="rank"><span class="medal g">1</span></td><td class="">Caleb Chase</td><td class="num">0</td><td class="num ok">$0.00</td><td class="num">47</td><td class="num">0</td><td class="num">12</td><td class="num">75%</td><td class="num">4</td><td class="num">25%</td><td class="num">0%</td><td class="num">31</td><td class="num">1</td><td class="num">0.6</td></tr>
+<tr><td class="rank"><span class="medal s">2</span></td><td class="">Dan Baldasso</td><td class="num">0</td><td class="num ok">$0.00</td><td class="num">11</td><td class="num">0</td><td class="num">4</td><td class="num">50%</td><td class="num">4</td><td class="num">50%</td><td class="num">0%</td><td class="num">18</td><td class="num">1</td><td class="num">0</td></tr>
+<tr><td class="rank"><span class="medal b">3</span></td><td class="">Matthew Burns</td><td class="num">0</td><td class="num ok">$0.00</td><td class="num">9</td><td class="num">1</td><td class="num">4</td><td class="num">80%</td><td class="num">1</td><td class="num">20%</td><td class="num">0%</td><td class="num">8</td><td class="num">0</td><td class="num">0</td></tr></tbody><tfoot><tr class="totalrow"><td></td><td class="foot">Team total</td><td class="num foot">0</td><td class="num foot">$0.00</td><td class="num foot">67</td><td class="num foot">1</td><td class="num foot">20</td><td class="num foot">69%</td><td class="num foot">9</td><td class="num foot">31%</td><td class="num foot">0%</td><td class="num foot">57</td><td class="num foot">2</td><td class="num foot">0.7</td></tr></tfoot></table></div></div><script>function slSwitchWindow(k){document.querySelectorAll(".wtab").forEach(function(b){b.classList.toggle("active", b.dataset.win===k);});document.querySelectorAll(".wpanel").forEach(function(p){p.classList.toggle("active", p.dataset.win===k);});}</script><!--LEADERBOARD_END-->
+
+  <div class="callout">
+    Deals closed and cash collected are counted the day the sale closes in the pipeline and the day Stripe settles the charge, so short windows can read zero even when calls are active, a sale can take weeks to close. Calls booked, held and no show are counted by the date each call's outcome was last updated on the pipeline board, not the date it was originally scheduled, GHL does not expose a full stage history. Show = calls held plus everything that progressed further (high priority, closed won). Cash is always the real Stripe figure, never GHL's flat close-won stamp. Outbound, inbound and call hours count only this closer's own dialed calls, setter and admin dialing is tracked separately and excluded from these three columns.
+  </div>
+
+  <h2 class="sec">Data audit</h2>
+  <!--AUDIT_START--><table class="audit"><tbody><tr><td>Opportunities pulled from the pipeline board</td><td class="num">198</td></tr><tr><td>Excluded as internal/test records</td><td class="num">8</td></tr><tr><td>Calls this month by non-closer team members (setters, VAs), excluded from the board</td><td class="num">38</td></tr><tr><td>Cash collected this month not yet attributed to a closer</td><td class="num">$0.00</td></tr></tbody></table><!--AUDIT_END-->
+
+  <footer>
+    Sales Leaderboard, Ai Funding Solutions. Source: GoHighLevel pipeline Caleb Chase, Matthew Burns, Dan Baldasso and Stripe (Ai Funding Solutions LLC). Numbers are written only by render.js from data.json, never typed by hand.
+  </footer>
+</div>

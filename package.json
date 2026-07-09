@@ -1,0 +1,9 @@
+{
+  "name": "sales-leaderboard-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ai Funding Solutions closer leaderboard, static HTML, no server needed in production.",
+  "scripts": {
+    "preview": "node preview_server.js"
+  }
+}
