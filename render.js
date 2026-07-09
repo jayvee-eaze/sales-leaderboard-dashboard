@@ -53,10 +53,10 @@ const SCORECARD_TILES = [
 ];
 
 const LEADER_TILES = [
-  { k: 'topCash', label: 'Top cash collected', icon: 'C' },
-  { k: 'topCloseRate', label: 'Top close rate', icon: 'R' },
-  { k: 'topShowRate', label: 'Top show rate', icon: 'S' },
-  { k: 'mostActive', label: 'Most active (calls)', icon: 'A' },
+  { k: 'topCash', label: 'Top cash collected' },
+  { k: 'topCloseRate', label: 'Top close rate' },
+  { k: 'topShowRate', label: 'Top show rate' },
+  { k: 'mostActive', label: 'Most active (calls)' },
 ];
 
 function medal(rank) {
@@ -150,12 +150,20 @@ function buildWindowTabs() {
   return '<div class="wtabs">' + tabs + '</div>' + script;
 }
 
-function leaderCard(tile, leader) {
-  const name = leader ? esc(leader.name) : 'Awaiting data';
-  const value = leader ? esc(leader.value) : '-';
-  return '<div class="leadercard"><div class="lc-icon">' + tile.icon + '</div>' +
-    '<div class="lc-body"><div class="lc-label">' + esc(tile.label) + '</div>' +
-    '<div class="lc-name">' + name + '</div><div class="lc-value">' + value + '</div></div></div>';
+function leaderCard(tile, leader, winKey) {
+  if (!leader) {
+    return '<div class="leadercard"><span class="lc-tag">' + esc(tile.label) + '</span>' +
+      '<div class="lc-main"><span class="avatar sm">-</span>' +
+      '<div><div class="lc-name">Awaiting data</div></div></div></div>';
+  }
+  // Color the avatar by this closer's actual overall rank in the same window, so the
+  // gold/silver/bronze thread is consistent with the podium cards below.
+  const rankRow = d.leaderboard[winKey].find(r => r.key === leader.key);
+  const rc = rankClass(rankRow ? rankRow.rank : 0);
+  return '<div class="leadercard ' + rc + '"><span class="lc-tag">' + esc(tile.label) + '</span>' +
+    '<div class="lc-main"><span class="avatar sm ' + rc + '">' + esc(initials(leader.name)) + '</span>' +
+    '<div><div class="lc-name">' + esc(leader.name) + '</div>' +
+    '<div class="lc-value">' + esc(leader.value) + '</div></div></div></div>';
 }
 
 function buildScorecardBlock() {
@@ -165,7 +173,7 @@ function buildScorecardBlock() {
       '<div class="tile"><div class="tv ' + tile.cls + '">' + esc(t[tile.k]) + '</div><div class="tl">' + esc(tile.label) + '</div></div>'
     ).join('');
     const lead = d.leaders[w.key];
-    const cards = LEADER_TILES.map(tile => leaderCard(tile, lead[tile.k])).join('');
+    const cards = LEADER_TILES.map(tile => leaderCard(tile, lead[tile.k], w.key)).join('');
     return '<div class="wpanel' + (w.key === DEFAULT_WIN ? ' active' : '') + '" data-win="' + w.key + '">' +
       '<div class="wlabel">' + esc(d.windows[w.key].label) + '</div>' +
       '<div class="tiles">' + tiles + '</div>' +
