@@ -43,6 +43,18 @@
   .wpanel.active { display: block; }
   .wlabel { color: var(--muted); font-size: 12.5px; margin-bottom: 8px; }
 
+  .detailhd { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+  .detailhd h3.sub-sec { margin: 22px 0 0; }
+  .rtabs { display: flex; gap: 6px; margin: 14px 0 0; }
+  .rtab { border: 1px solid var(--line); background: var(--paper); color: var(--navy); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+  .rtab.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .rosterpanel { display: none; margin-top: 10px; }
+  .rosterpanel.active { display: block; }
+
+  .status-pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 10.5px; font-weight: 800; letter-spacing: 0.03em; }
+  .status-pill.active { background: #39FF14; color: #0F172A; box-shadow: 0 0 8px rgba(57,255,20,.55); }
+  .status-pill.offboarded { background: #DC2626; color: #fff; }
+
   .boardwrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--card-sh); }
   table.board { width: 100%; min-width: 1080px; border-collapse: collapse; background: var(--paper); font-size: 13px; }
   table.board th, table.board td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }

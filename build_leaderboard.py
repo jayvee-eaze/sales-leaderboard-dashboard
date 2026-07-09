@@ -177,10 +177,14 @@ def main():
     windows = calls["windows"]
     now_utc = datetime.now(timezone.utc)
 
-    leaderboard = {}
-    totals = {}
+    leaderboard = {}       # win_key -> active-only rows, ranked among active closers
+    leaderboardAll = {}    # win_key -> active rows (in rank order) + offboarded rows appended after, every row tagged "status"
+    totals = {}            # win_key -> all-inclusive totals (real financial truth, active + offboarded)
+    activeTotals = {}      # win_key -> totals summed over active rows only, footer for the "Active Closer" table view
     leaders = {}
     offboarded_summary = {}  # win_key -> {cashCents, deals, names}, for the audit disclosure
+    active_by_win = {}      # win_key -> active rows (temp, before trend attached)
+    offboarded_by_win = {}  # win_key -> offboarded rows (temp, before trend attached)
     ALL_KEYS = list(WINDOW_KEYS) + list(PREV_OF.values())
     raw_rows = {}  # win_key -> every closer's row (active + offboarded), before trend is attached
 
@@ -204,6 +208,7 @@ def main():
             row = {
                 "key": key,
                 "name": c["name"],
+                "status": c.get("status", "active"),
                 "dealsClosed": won,
                 "cash": money(cash_cents),
                 "cashCents": cash_cents,
@@ -243,9 +248,19 @@ def main():
         for i, r in enumerate(active_rows):
             r["rank"] = i + 1
         offboarded_rows = [r for r in rows if r["key"] not in ACTIVE_KEYS]
+        active_by_win[win_key] = active_rows
+        offboarded_by_win[win_key] = offboarded_rows
 
         if win_key in WINDOW_KEYS:
-            leaderboard[win_key] = active_rows
+            t_active_deals = sum(r["dealsClosed"] for r in active_rows)
+            t_active_cash = sum(r["cashCents"] for r in active_rows)
+            t_active_booked = sum(r["callsBooked"] for r in active_rows)
+            t_active_held = sum(r["callsHeld"] for r in active_rows)
+            t_active_noshow = sum(r["noShow"] for r in active_rows)
+            t_active_showed = sum(r["showed"] for r in active_rows)
+            t_active_out = sum(r["outboundCalls"] for r in active_rows)
+            t_active_in = sum(r["inboundCalls"] for r in active_rows)
+            t_active_seconds = sum(r["callHours"] * 3600 for r in active_rows)
             totals[win_key] = {
                 "dealsClosed": t_deals,
                 "cash": money(t_cash),
@@ -262,6 +277,22 @@ def main():
                 "totalCalls": t_out + t_in,
                 "callHours": round(t_seconds / 3600.0, 1),
             }
+            activeTotals[win_key] = {
+                "dealsClosed": t_active_deals,
+                "cash": money(t_active_cash),
+                "cashCents": t_active_cash,
+                "callsBooked": t_active_booked,
+                "callsHeld": t_active_held,
+                "noShow": t_active_noshow,
+                "noShowRate": pct(t_active_noshow, t_active_showed + t_active_noshow),
+                "showed": t_active_showed,
+                "showRate": pct(t_active_showed, t_active_showed + t_active_noshow),
+                "closeRate": pct(t_active_deals, t_active_showed),
+                "outboundCalls": t_active_out,
+                "inboundCalls": t_active_in,
+                "totalCalls": t_active_out + t_active_in,
+                "callHours": round(t_active_seconds / 3600.0, 1),
+            }
             offboarded_summary[win_key] = {
                 "cashCents": sum(r["cashCents"] for r in offboarded_rows),
                 "deals": sum(r["dealsClosed"] for r in offboarded_rows),
@@ -277,16 +308,17 @@ def main():
                     [dict(r, callsBookedNum=r["callsBooked"]) for r in active_rows], "callsBookedNum", "callsBooked", require_positive=True),
             }
 
-    # Attach trend deltas (day/week/month/quarter only, vs their prev-period counterpart).
+    # Attach trend deltas (day/week/month/quarter only, vs their prev-period counterpart)
+    # to every row, active or offboarded, so the "All Closer" table view is complete too.
     for win_key, prev_key in PREV_OF.items():
         prev_by_key = {r["key"]: r for r in raw_rows[prev_key]}
-        for row in leaderboard[win_key]:
+        for row in raw_rows[win_key]:
             prev = prev_by_key[row["key"]]
             delta_cash = row["cashCents"] - prev["cashCents"]
             delta_deals = row["dealsClosed"] - prev["dealsClosed"]
             row["trend"] = trend_tag(delta_cash, delta_deals)
             row["trendNote"] = trend_note(delta_cash, delta_deals)
-    for row in leaderboard["allTime"]:
+    for row in raw_rows["allTime"]:
         row["trend"] = "na"
         row["trendNote"] = "since launch, no prior period"
 
@@ -297,8 +329,34 @@ def main():
         delta_deals = totals[win_key]["dealsClosed"] - prev_deals
         totals[win_key]["trend"] = trend_tag(delta_cash, delta_deals)
         totals[win_key]["trendNote"] = trend_note(delta_cash, delta_deals)
+
+        prev_active_cash = sum(r["cashCents"] for r in active_by_win[prev_key])
+        prev_active_deals = sum(r["dealsClosed"] for r in active_by_win[prev_key])
+        delta_active_cash = activeTotals[win_key]["cashCents"] - prev_active_cash
+        delta_active_deals = activeTotals[win_key]["dealsClosed"] - prev_active_deals
+        activeTotals[win_key]["trend"] = trend_tag(delta_active_cash, delta_active_deals)
+        activeTotals[win_key]["trendNote"] = trend_note(delta_active_cash, delta_active_deals)
     totals["allTime"]["trend"] = "na"
     totals["allTime"]["trendNote"] = "since launch, no prior period"
+    activeTotals["allTime"]["trend"] = "na"
+    activeTotals["allTime"]["trendNote"] = "since launch, no prior period"
+
+    # Now that trend is attached to every row, assemble the two display views. "Active
+    # Closer" = active_by_win rows as-is (already ranked among active). "All Closer" =
+    # the same active rows in the same order, then offboarded rows appended after (own
+    # cash/deals/name sort among themselves), copied so the continuous row numbering in
+    # this view never touches the "rank" active closers are ranked by elsewhere (podium,
+    # Leaders strip). Status is on every row already; this is purely a display ordering.
+    for win_key in WINDOW_KEYS:
+        leaderboard[win_key] = active_by_win[win_key]
+        offboarded_sorted = sorted(offboarded_by_win[win_key], key=lambda r: (-r["cashCents"], -r["dealsClosed"], r["name"]))
+        combined = active_by_win[win_key] + offboarded_sorted
+        all_view = []
+        for i, r in enumerate(combined):
+            copy = dict(r)
+            copy["rank"] = i + 1
+            all_view.append(copy)
+        leaderboardAll[win_key] = all_view
 
     # Career-wide (all-time) facts, attached to every window's rows regardless of which
     # window is being viewed: these are permanent achievements, not window-scoped ones.
@@ -322,6 +380,18 @@ def main():
             sys.exit(1)
         if totals[win_key]["cashCents"] != sum(r["cashCents"] for r in leaderboard[win_key]) + offb["cashCents"]:
             print("RECONCILE FAIL (leaderboard): %s cash total disagrees with active rows + offboarded" % win_key)
+            sys.exit(1)
+        # The two table views must each reconcile with their OWN footer total: the whole
+        # point of adding the "All Closer" view is that neither table ever shows a footer
+        # that disagrees with the rows actually visible above it.
+        if activeTotals[win_key]["cashCents"] != sum(r["cashCents"] for r in leaderboard[win_key]):
+            print("RECONCILE FAIL (leaderboard): %s activeTotals cash disagrees with active rows" % win_key)
+            sys.exit(1)
+        if totals[win_key]["cashCents"] != sum(r["cashCents"] for r in leaderboardAll[win_key]):
+            print("RECONCILE FAIL (leaderboard): %s totals cash disagrees with leaderboardAll rows" % win_key)
+            sys.exit(1)
+        if totals[win_key]["dealsClosed"] != sum(r["dealsClosed"] for r in leaderboardAll[win_key]):
+            print("RECONCILE FAIL (leaderboard): %s totals dealsClosed disagrees with leaderboardAll rows" % win_key)
             sys.exit(1)
         stripe_attributed = sum(stripe["byCloser"][c["key"]][win_key]["cash_cents"] for c in CLOSERS)
         if totals[win_key]["cashCents"] != stripe_attributed:
@@ -390,7 +460,9 @@ def main():
         "roster": [{"key": c["key"], "name": c["name"]} for c in CLOSERS if c["key"] in ACTIVE_KEYS],
         "rosterNames": ", ".join(c["name"] for c in CLOSERS if c["key"] in ACTIVE_KEYS),
         "leaderboard": leaderboard,
+        "leaderboardAll": leaderboardAll,
         "totals": totals,
+        "activeTotals": activeTotals,
         "leaders": leaders,
         "daily": daily["daily"],
         "dailyInsights": daily_insights,

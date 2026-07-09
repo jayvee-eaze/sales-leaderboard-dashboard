@@ -26,6 +26,7 @@ const DEFAULT_WIN = 'allTime';
 
 const COLS = [
   { k: 'name', label: 'Closer', cls: '' },
+  { k: 'status', label: 'Status', cls: '' },
   { k: 'dealsClosed', label: 'Deals closed', cls: 'num' },
   { k: 'cash', label: 'Cash collected', cls: 'num ok' },
   { k: 'trend', label: 'Trend', cls: 'num' },
@@ -114,11 +115,18 @@ function trendBadge(trend, note) {
   return '<span class="trend-tag ' + trend + '" title="' + esc(note) + '">' + glyph + '</span>';
 }
 
+function statusPill(status) {
+  return status === 'active' ?
+    '<span class="status-pill active">ACTIVE</span>' :
+    '<span class="status-pill offboarded">OFFBOARDED</span>';
+}
+
 function buildTable(rows, totals) {
   const head = '<tr><th></th>' + COLS.map(c => '<th class="' + c.cls + '">' + c.label + '</th>').join('') + '</tr>';
   const body = rows.map(r => {
     const cells = COLS.map(c => {
       if (c.k === 'trend') return '<td class="' + c.cls + '">' + trendBadge(r.trend, r.trendNote) + '</td>';
+      if (c.k === 'status') return '<td class="' + c.cls + '">' + statusPill(r.status) + '</td>';
       const raw = c.k === 'callHours' ? Number(r[c.k]).toFixed(1) : r[c.k];
       const v = c.k === 'name' ? esc(r.name) : esc(raw);
       return '<td class="' + c.cls + '">' + v + '</td>';
@@ -127,6 +135,7 @@ function buildTable(rows, totals) {
   }).join('\n');
   const totalCells = COLS.map(c => {
     if (c.k === 'name') return '<td class="foot">Team total</td>';
+    if (c.k === 'status') return '<td class="foot"></td>';
     if (c.k === 'trend') return '<td class="num foot">' + trendBadge(totals.trend, totals.trendNote) + '</td>';
     const raw = c.k === 'callHours' ? Number(totals[c.k]).toFixed(1) : totals[c.k];
     return '<td class="num foot">' + esc(raw) + '</td>';
@@ -134,6 +143,20 @@ function buildTable(rows, totals) {
   const foot = '<tr class="totalrow"><td></td>' + totalCells + '</tr>';
   return '<div class="boardwrap"><table class="board">' +
     '<thead>' + head + '</thead><tbody>' + body + '</tbody><tfoot>' + foot + '</tfoot></table></div>';
+}
+
+// Shared toggle: which roster view the Full Detail table shows. Both variants are
+// pre-rendered server-side (no client-side number computation); the toggle only shows or
+// hides pre-built markup, exactly like the window toggle.
+function buildRosterTabs() {
+  const script = '<script>function slSwitchRoster(k){' +
+    'document.querySelectorAll(".rtab").forEach(function(b){b.classList.toggle("active", b.dataset.roster===k);});' +
+    'document.querySelectorAll(".rosterpanel").forEach(function(p){p.classList.toggle("active", p.dataset.roster===k);});' +
+    '}</script>';
+  return '<div class="rtabs">' +
+    '<button class="rtab active" data-roster="active" onclick="slSwitchRoster(\'active\')">Active Closer</button>' +
+    '<button class="rtab" data-roster="all" onclick="slSwitchRoster(\'all\')">All Closer</button>' +
+    '</div>' + script;
 }
 
 // Shared toggle: one set of buttons controls every .wpanel on the page, in whichever
@@ -186,13 +209,15 @@ function buildScorecardBlock() {
 
 function buildLeaderboardBlock() {
   return WINS.map(w => {
-    const rows = d.leaderboard[w.key];
-    const podium = rows.map(buildPodiumCard).join('');
+    const podium = d.leaderboard[w.key].map(buildPodiumCard).join('');
+    const activeTable = buildTable(d.leaderboard[w.key], d.activeTotals[w.key]);
+    const allTable = buildTable(d.leaderboardAll[w.key], d.totals[w.key]);
     return '<div class="wpanel' + (w.key === DEFAULT_WIN ? ' active' : '') + '" data-win="' + w.key + '">' +
       '<div class="wlabel">' + esc(d.windows[w.key].label) + '</div>' +
       '<div class="podium">' + podium + '</div>' +
-      '<h3 class="sub-sec">Full detail</h3>' +
-      buildTable(rows, d.totals[w.key]) +
+      '<div class="detailhd"><h3 class="sub-sec">Full detail</h3>' + buildRosterTabs() + '</div>' +
+      '<div class="rosterpanel active" data-roster="active">' + activeTable + '</div>' +
+      '<div class="rosterpanel" data-roster="all">' + allTable + '</div>' +
       '</div>';
   }).join('\n');
 }
