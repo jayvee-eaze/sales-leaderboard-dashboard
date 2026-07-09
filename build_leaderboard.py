@@ -9,7 +9,7 @@ import json
 import sys
 from datetime import datetime, timezone
 
-from lib import CLOSERS, WINDOW_KEYS, PREV_OF, STAGE_DISPLAY, money, pct, pct_num
+from lib import CLOSERS, WINDOW_KEYS, PREV_OF, STAGE_DISPLAY, BOOKED_STAGES, money, pct, pct_num
 
 
 def load(name):
@@ -72,6 +72,78 @@ def build_badges(row, leaders_win, career_top_cash_key, career_first_deal_keys):
     if top_booked and row["key"] == top_booked["key"] and row["callsBooked"] > 0:
         badges.append("Most Booked")
     return badges
+
+
+def fmt_date_short(iso_date):
+    dt = datetime.strptime(iso_date, "%Y-%m-%d")
+    return "{} {}".format(dt.strftime("%b"), dt.day)
+
+
+def compute_daily_insights(daily):
+    """Narrative one-liners for the Pipeline Health charts, entirely derived from the
+    same daily[] rollup the charts are drawn from (same data, same numbers, just also
+    described in words). Every branch has a well-formed fallback for thin/no data."""
+    n = len(daily)
+    total_booked = sum(d["callsBooked"] for d in daily)
+    active_days = sum(1 for d in daily if d["totalCalls"] > 0)
+    best_day = max(daily, key=lambda d: d["callsBooked"]) if daily else None
+    last7 = daily[-7:]
+    last7_booked = sum(d["callsBooked"] for d in last7)
+
+    if total_booked == 0 or not best_day or best_day["callsBooked"] == 0:
+        booked_note = "No calls booked yet since launch."
+    else:
+        booked_note = "{} calls booked since launch, {} in the last 7 days. Busiest day: {} with {}.".format(
+            total_booked, last7_booked, fmt_date_short(best_day["date"]), best_day["callsBooked"])
+
+    resolved_days = [d for d in daily if (d["showed"] + d["noShow"]) > 0]
+    if not resolved_days:
+        show_note = "No calls have been resolved as showed or no-show yet."
+    else:
+        rates = [100.0 * d["showed"] / (d["showed"] + d["noShow"]) for d in resolved_days]
+        recent = rates[-7:]
+        show_note = "Show rate has ranged {:.0f}% to {:.0f}% across the {} days with a resolved call, averaging {:.0f}% recently.".format(
+            min(rates), max(rates), len(resolved_days), sum(recent) / len(recent))
+
+    total_cash = sum(d["cashCents"] for d in daily)
+    cash_days = [i for i, d in enumerate(daily) if d["cashCents"] > 0]
+    if not cash_days:
+        cash_note = "No cash collected yet since launch."
+    else:
+        last_idx = cash_days[-1]
+        days_since = (n - 1) - last_idx
+        if len(cash_days) == 1:
+            tail = "That sale closed today." if days_since == 0 else "No cash collected in the {} day{} since.".format(
+                days_since, "" if days_since == 1 else "s")
+            cash_note = "{} collected total, entirely from one sale on {}. {}".format(
+                money(total_cash), fmt_date_short(daily[last_idx]["date"]), tail)
+        else:
+            cash_note = "{} collected total across {} days with a sale, most recently {}.".format(
+                money(total_cash), len(cash_days), fmt_date_short(daily[last_idx]["date"]))
+
+    return {
+        "callsBookedNote": booked_note,
+        "showRateNote": show_note,
+        "cashNote": cash_note,
+        "totalCallsBooked": total_booked,
+        "bestDay": {"label": fmt_date_short(best_day["date"]), "value": best_day["callsBooked"]} if best_day else None,
+        "activeDays": active_days,
+        "totalDays": n,
+    }
+
+
+def compute_funnel_insights(stage_totals, funnel_total):
+    booked_universe = sum(stage_totals.get(k, 0) for k in BOOKED_STAGES)
+    closed_won = stage_totals.get("closedWon", 0)
+    new_unworked = stage_totals.get("newUnworked", 0)
+    lead_note = "{} of {} opportunities ({}) are still New, Unworked.".format(
+        new_unworked, funnel_total, pct(new_unworked, funnel_total))
+    if booked_universe == 0:
+        close_note = "No opportunities have reached Call Booked or further yet."
+    else:
+        close_note = "Of the {} opportunities that reached Call Booked or further, {} {} closed ({}).".format(
+            booked_universe, closed_won, "has" if closed_won == 1 else "have", pct(closed_won, booked_universe))
+    return {"leadNote": lead_note, "closeNote": close_note}
 
 
 def build_gap_note(row, rows_sorted):
@@ -275,12 +347,17 @@ def main():
 
     # Funnel: whole-board stage snapshot (board-exact, includes test records, same
     # convention as AIFS: the funnel shows what the live GHL board shows).
-    funnel = [{"key": k, "label": label, "count": pipeline["stageTotals"].get(k, 0)} for k, label in STAGE_DISPLAY]
+    funnel = [{"key": k, "label": label, "count": pipeline["stageTotals"].get(k, 0),
+               "pct": pct(pipeline["stageTotals"].get(k, 0), pipeline["totalOpportunities"])}
+              for k, label in STAGE_DISPLAY]
     funnel_total = sum(f["count"] for f in funnel)
     if funnel_total != pipeline["totalOpportunities"]:
         print("RECONCILE FAIL (leaderboard): funnel stage sum (%d) != total opportunities pulled (%d)" % (
             funnel_total, pipeline["totalOpportunities"]))
         sys.exit(1)
+
+    daily_insights = compute_daily_insights(daily["daily"])
+    funnel_insights = compute_funnel_insights(pipeline["stageTotals"], funnel_total)
 
     data = {
         "asOf": windows["day"]["start"],
@@ -292,8 +369,10 @@ def main():
         "totals": totals,
         "leaders": leaders,
         "daily": daily["daily"],
+        "dailyInsights": daily_insights,
         "funnel": funnel,
         "funnelTotal": funnel_total,
+        "funnelInsights": funnel_insights,
         "audit": {
             "excludedTestRecords": pipeline["excludedTestRecords"],
             "totalOpportunitiesPulled": pipeline["totalOpportunities"],

@@ -121,16 +121,23 @@
   @media (max-width: 900px) { .podium { grid-template-columns: 1fr; } }
   @media (max-width: 420px) { .pstats { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
 
-  .charts .chart { width: 100%; height: auto; display: block; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); margin-bottom: 4px; box-shadow: var(--card-sh); }
-  .charthd { color: var(--muted); font-size: 12px; margin: 16px 0 6px; }
+  .charts { display: flex; flex-direction: column; gap: 14px; }
+  .chartcard { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--card-sh); }
+  .chartcard .chart { width: 100%; height: auto; display: block; }
+  .charthd { color: var(--navy); font-weight: 700; font-size: 13px; margin-bottom: 8px; }
+  .chartnote { color: var(--muted); font-size: 12.5px; margin-top: 10px; border-top: 1px solid var(--line); padding-top: 10px; }
 
   .funnel { display: flex; flex-direction: column; gap: 6px; }
-  .frow { display: grid; grid-template-columns: 130px 1fr 40px; align-items: center; gap: 10px; font-size: 12.5px; }
+  .frow { display: grid; grid-template-columns: 130px 1fr 64px; align-items: center; gap: 10px; font-size: 12.5px; }
   .flabel { color: var(--navy); }
   .fbarwrap { background: #F1F5F9; border-radius: 6px; height: 16px; overflow: hidden; }
   .fbar { background: var(--blue); height: 100%; border-radius: 6px; }
   .fcount { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
-  @media (max-width: 640px) { .frow { grid-template-columns: 90px 1fr 32px; font-size: 11.5px; } }
+  .fpct { display: inline-block; color: var(--muted); font-weight: 500; font-size: 11px; min-width: 34px; text-align: right; }
+  @media (max-width: 640px) { .frow { grid-template-columns: 90px 1fr 56px; font-size: 11.5px; } }
+
+  .funnel-insights { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
+  .finsight { background: #F1F5F9; border-radius: 10px; padding: 10px 12px; font-size: 12.5px; color: var(--navy); border-left: 3px solid var(--blue); }
 
   .callout { font-size: 12.5px; color: var(--muted); background: #F1F5F9; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-top: 14px; }
   footer { margin-top: 40px; color: var(--muted); font-size: 11.5px; border-top: 1px solid var(--line); padding-top: 14px; }
@@ -175,6 +182,7 @@
 
   <section class="page" data-page="pipeline">
     <h2 class="sec">Pipeline health</h2>
+    <div class="sub" style="margin-bottom:16px">Where the pipeline stands right now, and how daily activity has trended since launch. Not window-toggled, this is always the full history and the current board snapshot.</div>
     <!--PIPELINE_START--><!--PIPELINE_END-->
   </section>
 

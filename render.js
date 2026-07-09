@@ -209,30 +209,34 @@ function buildCareerBanner() {
 
 // --- Pipeline Health page: no window toggle, always full history / current snapshot ---
 
+const CHART_W = 700, CHART_H = 150, CHART_PAD_L = 6, CHART_PAD_R = 6, CHART_PAD_B = 18, CHART_PAD_T = 20;
+const CHART_INNER_W = CHART_W - CHART_PAD_L - CHART_PAD_R;
+const CHART_INNER_H = CHART_H - CHART_PAD_T - CHART_PAD_B;
+
 function svgBarChart(rows, valueKey, opts) {
-  const W = 700, H = 130, padL = 6, padR = 6, padB = 18, padT = 6;
-  const innerW = W - padL - padR, innerH = H - padT - padB;
   const max = Math.max(1, ...rows.map(r => r[valueKey]));
-  const bw = innerW / rows.length;
+  const bw = CHART_INNER_W / rows.length;
+  const peakIdx = rows.reduce((best, r, i) => (r[valueKey] > rows[best][valueKey] ? i : best), 0);
   const bars = rows.map((r, i) => {
     const v = r[valueKey];
-    const bh = (v / max) * innerH;
-    const x = padL + i * bw + bw * 0.15;
-    const y = padT + innerH - bh;
+    const bh = (v / max) * CHART_INNER_H;
+    const x = CHART_PAD_L + i * bw + bw * 0.15;
+    const y = CHART_PAD_T + CHART_INNER_H - bh;
     const w = bw * 0.7;
-    const label = (i % 4 === 0) ? '<text x="' + (x + w / 2) + '" y="' + (H - 4) + '" font-size="9" fill="#64748B" text-anchor="middle">' + esc(r.date.slice(5)) + '</text>' : '';
+    const dateLbl = (i % 4 === 0 || i === rows.length - 1) ?
+      '<text x="' + (x + w / 2).toFixed(1) + '" y="' + (CHART_H - 4) + '" font-size="9" fill="#94A3B8" text-anchor="middle">' + esc(r.date.slice(5)) + '</text>' : '';
+    const peakLbl = (i === peakIdx && v > 0) ?
+      '<text x="' + (x + w / 2).toFixed(1) + '" y="' + (y - 5).toFixed(1) + '" font-size="10" font-weight="700" fill="' + (opts.color || '#3B82F6') + '" text-anchor="middle">' + esc(String(v)) + '</text>' : '';
     const title = '<title>' + esc(r.date) + ': ' + esc(String(v)) + '</title>';
-    return '<rect x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + Math.max(bh, v > 0 ? 2 : 0).toFixed(1) + '" fill="' + (opts.color || '#3B82F6') + '" rx="2">' + title + '</rect>' + label;
+    return '<rect x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + Math.max(bh, v > 0 ? 2 : 0).toFixed(1) + '" fill="' + (opts.color || '#3B82F6') + '" rx="2">' + title + '</rect>' + peakLbl + dateLbl;
   }).join('');
-  return '<svg viewBox="0 0 ' + W + ' ' + H + '" class="chart">' + bars + '</svg>';
+  return '<svg viewBox="0 0 ' + CHART_W + ' ' + CHART_H + '" class="chart">' + bars + '</svg>';
 }
 
 function svgLineChart(rows, valueKey, opts) {
-  const W = 700, H = 130, padL = 6, padR = 6, padB = 18, padT = 10;
-  const innerW = W - padL - padR, innerH = H - padT - padB;
   const max = opts.max || Math.max(1, ...rows.map(r => r[valueKey] || 0));
-  const step = innerW / Math.max(1, rows.length - 1);
-  const pt = (i, v) => [padL + i * step, padT + innerH - (v / max) * innerH];
+  const step = CHART_INNER_W / Math.max(1, rows.length - 1);
+  const pt = (i, v) => [CHART_PAD_L + i * step, CHART_PAD_T + CHART_INNER_H - (v / max) * CHART_INNER_H];
   let segs = [], cur = [];
   rows.forEach((r, i) => {
     const v = r[valueKey];
@@ -240,48 +244,113 @@ function svgLineChart(rows, valueKey, opts) {
       if (cur.length) segs.push(cur);
       cur = [];
     } else {
-      cur.push(pt(i, v));
+      cur.push({ i, v, xy: pt(i, v) });
     }
   });
   if (cur.length) segs.push(cur);
+  const baseline = CHART_PAD_T + CHART_INNER_H;
+  const areas = opts.fill ? segs.map(seg => {
+    const pts = seg.map(p => p.xy[0].toFixed(1) + ',' + p.xy[1].toFixed(1)).join(' ');
+    const first = seg[0].xy[0].toFixed(1), last = seg[seg.length - 1].xy[0].toFixed(1);
+    return '<polygon points="' + first + ',' + baseline + ' ' + pts + ' ' + last + ',' + baseline + '" fill="' + (opts.color || '#3B82F6') + '" opacity="0.1"/>';
+  }).join('') : '';
   const lines = segs.map(seg =>
-    '<polyline points="' + seg.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ') + '" fill="none" stroke="' + (opts.color || '#3B82F6') + '" stroke-width="2"/>' +
-    seg.map(p => '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="2.5" fill="' + (opts.color || '#3B82F6') + '"/>').join('')
+    '<polyline points="' + seg.map(p => p.xy[0].toFixed(1) + ',' + p.xy[1].toFixed(1)).join(' ') + '" fill="none" stroke="' + (opts.color || '#3B82F6') + '" stroke-width="2"/>' +
+    seg.map(p => '<circle cx="' + p.xy[0].toFixed(1) + '" cy="' + p.xy[1].toFixed(1) + '" r="2.5" fill="' + (opts.color || '#3B82F6') + '"/>').join('')
   ).join('');
-  const labels = rows.map((r, i) => (i % 4 === 0) ?
-    '<text x="' + pt(i, 0)[0].toFixed(1) + '" y="' + (H - 4) + '" font-size="9" fill="#64748B" text-anchor="middle">' + esc(r.date.slice(5)) + '</text>' : '').join('');
-  return '<svg viewBox="0 0 ' + W + ' ' + H + '" class="chart">' + lines + labels + '</svg>';
+  const refLine = (opts.refValue !== undefined) ? (function () {
+    const y = CHART_PAD_T + CHART_INNER_H - (opts.refValue / max) * CHART_INNER_H;
+    return '<line x1="' + CHART_PAD_L + '" y1="' + y.toFixed(1) + '" x2="' + (CHART_W - CHART_PAD_R) + '" y2="' + y.toFixed(1) + '" stroke="#94A3B8" stroke-width="1" stroke-dasharray="4,3"/>' +
+      '<text x="' + (CHART_W - CHART_PAD_R) + '" y="' + (y - 4).toFixed(1) + '" font-size="9" fill="#94A3B8" text-anchor="end">' + esc(opts.refLabel || '') + '</text>';
+  })() : '';
+  const flat = segs.flat();
+  const peak = flat.length ? flat.reduce((best, p) => (p.v > best.v ? p : best), flat[0]) : null;
+  const peakLbl = peak ? '<text x="' + peak.xy[0].toFixed(1) + '" y="' + (peak.xy[1] - 8).toFixed(1) + '" font-size="10" font-weight="700" fill="' + (opts.color || '#3B82F6') + '" text-anchor="middle">' + esc(opts.peakFormat ? opts.peakFormat(peak.v) : String(Math.round(peak.v))) + '</text>' : '';
+  const labels = rows.map((r, i) => (i % 4 === 0 || i === rows.length - 1) ?
+    '<text x="' + pt(i, 0)[0].toFixed(1) + '" y="' + (CHART_H - 4) + '" font-size="9" fill="#94A3B8" text-anchor="middle">' + esc(r.date.slice(5)) + '</text>' : '').join('');
+  return '<svg viewBox="0 0 ' + CHART_W + ' ' + CHART_H + '" class="chart">' + refLine + areas + lines + peakLbl + labels + '</svg>';
+}
+
+// Step-area chart: correct for a running total, which does not go back down and should
+// never read as "new value earned every day" the way discrete bars would.
+function svgStepArea(rows, valueKey, opts) {
+  const max = Math.max(1, ...rows.map(r => r[valueKey]));
+  const step = CHART_INNER_W / Math.max(1, rows.length - 1);
+  const x = i => CHART_PAD_L + i * step;
+  const y = v => CHART_PAD_T + CHART_INNER_H - (v / max) * CHART_INNER_H;
+  const baseline = CHART_PAD_T + CHART_INNER_H;
+  let pts = [[x(0), y(rows[0][valueKey])]];
+  for (let i = 1; i < rows.length; i++) {
+    pts.push([x(i), y(rows[i - 1][valueKey])]);
+    pts.push([x(i), y(rows[i][valueKey])]);
+  }
+  const lineStr = pts.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+  const areaStr = x(0).toFixed(1) + ',' + baseline + ' ' + lineStr + ' ' + x(rows.length - 1).toFixed(1) + ',' + baseline;
+  const last = rows[rows.length - 1][valueKey];
+  const peakLbl = '<text x="' + x(rows.length - 1).toFixed(1) + '" y="' + (y(last) - 8).toFixed(1) + '" font-size="10" font-weight="700" fill="' + (opts.color || '#059669') + '" text-anchor="end">' + esc(opts.peakFormat ? opts.peakFormat(last) : String(last)) + '</text>';
+  const labels = rows.map((r, i) => (i % 4 === 0 || i === rows.length - 1) ?
+    '<text x="' + x(i).toFixed(1) + '" y="' + (CHART_H - 4) + '" font-size="9" fill="#94A3B8" text-anchor="middle">' + esc(r.date.slice(5)) + '</text>' : '').join('');
+  return '<svg viewBox="0 0 ' + CHART_W + ' ' + CHART_H + '" class="chart">' +
+    '<polygon points="' + areaStr + '" fill="' + (opts.color || '#059669') + '" opacity="0.12"/>' +
+    '<polyline points="' + lineStr + '" fill="none" stroke="' + (opts.color || '#059669') + '" stroke-width="2"/>' +
+    peakLbl + labels + '</svg>';
+}
+
+function buildChartCard(title, note, chartHtml) {
+  return '<div class="chartcard"><div class="charthd">' + esc(title) + '</div>' + chartHtml +
+    '<div class="chartnote">' + esc(note) + '</div></div>';
+}
+
+function buildPipelineKpis() {
+  const ins = d.dailyInsights;
+  const tiles = [
+    { v: ins.totalCallsBooked, l: 'Calls booked, all time' },
+    { v: ins.bestDay ? (ins.bestDay.value + ' (' + ins.bestDay.label + ')') : 'n/a', l: 'Best single day' },
+    { v: ins.activeDays + ' of ' + ins.totalDays, l: 'Active days since launch' },
+    { v: d.totals.allTime.cash, l: 'Cash collected, all time' },
+  ];
+  return '<div class="tiles">' + tiles.map(t =>
+    '<div class="tile"><div class="tv">' + esc(t.v) + '</div><div class="tl">' + esc(t.l) + '</div></div>'
+  ).join('') + '</div>';
 }
 
 function buildTrendCharts() {
   const daily = d.daily;
-  const showRateRows = daily.map(r => ({ date: r.date, v: (r.showed + r.noShow) > 0 ? Math.round(100 * r.showed / (r.showed + r.noShow)) : null }));
+  const ins = d.dailyInsights;
+  const showRateRows = daily.map(r => ({ date: r.date, pct: (r.showed + r.noShow) > 0 ? Math.round(100 * r.showed / (r.showed + r.noShow)) : null }));
   let cum = 0;
-  const cumCash = daily.map(r => { cum += r.cashCents; return { date: r.date, v: cum / 100 }; });
+  const cumCash = daily.map(r => { cum += r.cashCents; return { date: r.date, cum: cum / 100 }; });
   return (
-    '<div class="charthd">Calls booked per day, since launch</div>' +
-    svgBarChart(daily, 'callsBooked', { color: '#3B82F6' }) +
-    '<div class="charthd">Show rate per day (blank = no calls resolved that day)</div>' +
-    svgLineChart(showRateRows.map(r => ({ date: r.date, pct: r.v })), 'pct', { color: '#059669', max: 100 }) +
-    '<div class="charthd">Cumulative cash collected, since launch</div>' +
-    svgBarChart(cumCash.map(r => ({ date: r.date, cum: r.v })), 'cum', { color: '#059669' })
+    buildChartCard('Calls booked per day, since launch', ins.callsBookedNote,
+      svgBarChart(daily, 'callsBooked', { color: '#3B82F6' })) +
+    buildChartCard('Show rate per day (blank = no calls resolved that day)', ins.showRateNote,
+      svgLineChart(showRateRows, 'pct', { color: '#059669', max: 100, fill: true, refValue: 50, refLabel: '50%', peakFormat: v => Math.round(v) + '%' })) +
+    buildChartCard('Cumulative cash collected, since launch', ins.cashNote,
+      svgStepArea(cumCash, 'cum', { color: '#059669', peakFormat: v => '$' + v.toLocaleString() }))
   );
 }
 
 function buildFunnel() {
+  const fins = d.funnelInsights;
   const max = Math.max(1, ...d.funnel.map(f => f.count));
   const rows = d.funnel.map(f => {
     const pctW = Math.max(2, Math.round(100 * f.count / max));
     return '<div class="frow"><div class="flabel">' + esc(f.label) + '</div>' +
       '<div class="fbarwrap"><div class="fbar" style="width:' + pctW + '%"></div></div>' +
-      '<div class="fcount">' + esc(f.count) + '</div></div>';
+      '<div class="fcount">' + esc(f.count) + '<span class="fpct">' + esc(f.pct) + '</span></div></div>';
   }).join('');
   return '<div class="funnel">' + rows + '</div>' +
-    '<div class="note" style="margin-top:8px">Board-exact snapshot, all ' + esc(d.funnelTotal) + ' opportunities on the pipeline right now (includes internal/test records, same as the live GHL board columns).</div>';
+    '<div class="funnel-insights">' +
+    '<div class="finsight">' + esc(fins.leadNote) + '</div>' +
+    '<div class="finsight">' + esc(fins.closeNote) + '</div>' +
+    '</div>' +
+    '<div class="note" style="margin-top:10px">Board-exact snapshot, all ' + esc(d.funnelTotal) + ' opportunities on the pipeline right now (includes internal/test records, same as the live GHL board columns).</div>';
 }
 
 function buildPipelineHealthBlock() {
-  return '<div class="charts">' + buildTrendCharts() + '</div>' +
+  return buildPipelineKpis() +
+    '<h3 class="sub-sec">Trends since launch</h3>' +
+    '<div class="charts">' + buildTrendCharts() + '</div>' +
     '<h3 class="sub-sec">Whole pipeline, by stage</h3>' + buildFunnel();
 }
 

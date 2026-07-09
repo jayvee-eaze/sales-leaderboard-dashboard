@@ -1,7 +1,7 @@
 {
   "asOf": "2026-07-08",
   "timezone": "America/Los_Angeles",
-  "generatedAtUtc": "2026-07-09T01:59:39+00:00",
+  "generatedAtUtc": "2026-07-09T03:29:59+00:00",
   "windows": {
     "day": {
       "start": "2026-07-08",
@@ -968,64 +968,91 @@
       "totalCalls": 8
     }
   ],
+  "dailyInsights": {
+    "callsBookedNote": "75 calls booked since launch, 64 in the last 7 days. Busiest day: Jul 7 with 37.",
+    "showRateNote": "Show rate has ranged 0% to 50% across the 9 days with a resolved call, averaging 27% recently.",
+    "cashNote": "$4,997.00 collected total, entirely from one sale on Jun 30. No cash collected in the 8 days since.",
+    "totalCallsBooked": 75,
+    "bestDay": {
+      "label": "Jul 7",
+      "value": 37
+    },
+    "activeDays": 13,
+    "totalDays": 24
+  },
   "funnel": [
     {
       "key": "newUnworked",
       "label": "New, Unworked",
-      "count": 91
+      "count": 91,
+      "pct": "46%"
     },
     {
       "key": "contacted",
       "label": "Contacted",
-      "count": 0
+      "count": 0,
+      "pct": "0%"
     },
     {
       "key": "callBooked",
       "label": "Call Booked",
-      "count": 28
+      "count": 28,
+      "pct": "14%"
     },
     {
       "key": "rescheduling",
       "label": "Rescheduling",
-      "count": 21
+      "count": 21,
+      "pct": "11%"
     },
     {
       "key": "noShow",
       "label": "No Show",
-      "count": 27
+      "count": 27,
+      "pct": "14%"
     },
     {
       "key": "apptCancelled",
       "label": "Appt Cancelled",
-      "count": 10
+      "count": 10,
+      "pct": "5%"
     },
     {
       "key": "callHeld",
       "label": "Call Held",
-      "count": 2
+      "count": 2,
+      "pct": "1%"
     },
     {
       "key": "highPriority",
       "label": "High Priority",
-      "count": 9
+      "count": 9,
+      "pct": "5%"
     },
     {
       "key": "closedWon",
       "label": "Closed Won",
-      "count": 1
+      "count": 1,
+      "pct": "1%"
     },
     {
       "key": "longTermNurture",
       "label": "Long-Term Nurture",
-      "count": 4
+      "count": 4,
+      "pct": "2%"
     },
     {
       "key": "lost",
       "label": "Lost",
-      "count": 5
+      "count": 5,
+      "pct": "3%"
     }
   ],
   "funnelTotal": 198,
+  "funnelInsights": {
+    "leadNote": "91 of 198 opportunities (46%) are still New, Unworked.",
+    "closeNote": "Of the 98 opportunities that reached Call Booked or further, 1 has closed (1%)."
+  },
   "audit": {
     "excludedTestRecords": 8,
     "totalOpportunitiesPulled": 198,
