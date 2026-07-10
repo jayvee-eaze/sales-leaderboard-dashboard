@@ -123,13 +123,23 @@ def load_opportunities(paths):
 
 
 def load_calls(paths):
-    """Read one or more raw export-messages-by-location (channel=Call) page dumps."""
+    """Read one or more raw export-messages-by-location (channel=Call) page dumps.
+    Deduplicates by message id: the upstream cursor has occasionally misbehaved, forcing
+    a pull to be split into overlapping date windows instead of clean cursor pages, so
+    this makes the whole pipeline robust to any overlap rather than double-counting."""
+    seen = set()
     out = []
     for p in paths:
         with open(p, encoding="utf-8") as f:
             raw = json.load(f)
         d = raw.get("data", raw)
-        out.extend(d.get("messages") or [])
+        for m in d.get("messages") or []:
+            mid = m.get("id")
+            if mid is not None and mid in seen:
+                continue
+            if mid is not None:
+                seen.add(mid)
+            out.append(m)
     return out
 
 
